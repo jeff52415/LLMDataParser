@@ -26,3 +26,9 @@ poetry.lock
 
 #csv files
 *.csv
+
+# ruff cache
+.ruff_cache/
+
+# Mac files
+.DS_Store

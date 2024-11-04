@@ -55,6 +55,11 @@ ignore = [
     "E501"  # Line too long
 ]
 
+[tool.ruff]
+line-length = 88
+select = ["E", "F"]  # or specify checks explicitly without E501
+ignore = ["E501"]
+
 [build-system]
 requires = ["poetry-core>=1.5.0"]
 build-backend = "poetry.core.masonry.api"
