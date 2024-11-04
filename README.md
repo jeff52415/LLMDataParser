@@ -1,4 +1,3 @@
-
 # LLMDataParser
 
 **LLMDataParser** is a Python library that provides parsers for benchmark datasets used in evaluating Large Language Models (LLMs). It offers a unified interface for loading and parsing datasets like **MMLU** and **GSM8k**, simplifying dataset preparation for LLM evaluation.
@@ -18,16 +17,16 @@ You can install the package directly using `pip`. Even with only a `pyproject.to
 
 1. **Clone the Repository**:
 
-    ```bash
-    git clone https://github.com/jeff52415/LLMDataParser.git
-    cd LLMDataParser
-    ```
+   ```bash
+   git clone https://github.com/jeff52415/LLMDataParser.git
+   cd LLMDataParser
+   ```
 
 2. **Install Dependencies with pip**:
 
-    ```bash
-    pip install .
-    ```
+   ```bash
+   pip install .
+   ```
 
 ### Option 2: Using Poetry
 
@@ -35,25 +34,19 @@ Poetry manages the virtual environment and dependencies automatically, so you do
 
 1. **Install Dependencies with Poetry**:
 
-    ```bash
-    poetry install
-    ```
+   ```bash
+   poetry install
+   ```
 
 2. **Activate the Virtual Environment**:
 
-    ```bash
-    poetry shell
-    ```
-
+   ```bash
+   poetry shell
+   ```
 
 ## Available Parsers
 
-- **MMLUParser**: Parses the MMLU dataset.
-- **GSM8kParser**: Parses the GSM8k dataset.
-
-## Contributing
-
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+- **MMLUDatasetParser**: Parses the MMLU dataset.
 
 ## License
 
@@ -61,4 +54,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For questions or support, please open an issue on GitHub or contact [your-email@example.com](mailto:your-email@example.com).
+For questions or support, please open an issue on GitHub or contact [jeff52415@gmail.com](mailto:jeff52415@gmail.com).
