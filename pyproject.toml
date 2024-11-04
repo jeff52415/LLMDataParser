@@ -2,7 +2,7 @@
 name = "llmdataparser"
 version = "0.1.0"
 description = "A collection of parsers for LLM benchmark datasets like MMLU, MMLU-Pro, GSM8k, and more."
-authors = ["Jeff <jeff52415@gmail.com>"]
+authors = ["Jeff Yang <jeff52415@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/jeff52415/LLMDataParser"
@@ -13,7 +13,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "Intended Audience :: Developers",
+    "Intended Audience :: Developers"
 ]
 
 [tool.poetry.dependencies]
@@ -22,11 +22,9 @@ pandas = "^2.0.3"
 datasets = "^2.14.4"
 typing-extensions = "^4.8.0"
 
-
-
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
-black = {version = "^23.9.1", allow-prereleases = true}
+black = { version = "^23.9.1", allow-prereleases = true }
 flake8 = "^6.1.0"
 isort = "^5.12.0"
 mypy = "^1.5.1"
@@ -51,10 +49,12 @@ profile = "black"
 line_length = 88
 known_first_party = ["llmdataparser"]
 
+[tool.flake8]
+max-line-length = 88
+ignore = [
+    "E501"  # Line too long
+]
+
 [build-system]
 requires = ["poetry-core>=1.5.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.flake8]
-max-line-length = 88
-ignore = ["E501"]
