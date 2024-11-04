@@ -54,3 +54,7 @@ known_first_party = ["llmdataparser"]
 [build-system]
 requires = ["poetry-core>=1.5.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.flake8]
+max-line-length = 88
+ignore = ["E501"]
