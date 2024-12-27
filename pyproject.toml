@@ -21,9 +21,10 @@ python = ">=3.11"
 pandas = "^2.0.3"
 datasets = "^2.14.4"
 typing-extensions = "^4.8.0"
+ipywidgets = "^8.1.1"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
+pytest = "^7.0.0"
 black = { version = "^23.9.1", allow-prereleases = true }
 flake8 = "^6.1.0"
 isort = "^5.12.0"
@@ -34,7 +35,6 @@ ipykernel = "^6.7.0"
 
 [tool.black]
 line-length = 88
-target-version = ["py311"]
 exclude = """
 /(
     \\.git
@@ -55,6 +55,15 @@ line-length = 88
 select = ["E", "F"]  # or specify checks explicitly without E501
 ignore = ["E501"]
 
+[tool.ruff.lint]
+ignore = ["E501"]
+select = ["E", "F", "I"]
+
 [build-system]
 requires = ["poetry-core>=1.5.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')"
+]
