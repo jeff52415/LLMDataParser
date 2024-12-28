@@ -49,11 +49,8 @@ profile = "black"
 line_length = 88
 known_first_party = ["llmdataparser"]
 
-
 [tool.ruff]
 line-length = 88
-select = ["E", "F"]  # or specify checks explicitly without E501
-ignore = ["E501"]
 
 [tool.ruff.lint]
 ignore = ["E501"]
