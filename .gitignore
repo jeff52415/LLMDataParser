@@ -32,3 +32,11 @@ poetry.lock
 
 # Mac files
 .DS_Store
+
+#gradio cache
+.cache/
+.gradio/
+
+#notebook cache
+.ipynb_checkpoints/
+notebooks/
