@@ -2,7 +2,19 @@
 from typing import Type
 
 from .base_parser import DatasetParser
-from .mmlu_parser import MMLUDatasetParser
+from .bbh_parser import BBHDatasetParser
+from .gsm8k_parser import GSM8KDatasetParser
+from .humaneval_parser import HumanEvalDatasetParser, HumanEvalDatasetPlusParser
+from .ifeval_parser import IFEvalDatasetParser
+from .math_parser import MATHDatasetParser
+from .mbpp_parser import MBPPDatasetParser
+from .mgsm_parser import MGSMDatasetParser
+from .mmlu_parser import (
+    MMLUDatasetParser,
+    MMLUProDatasetParser,
+    MMLUReduxDatasetParser,
+    TMMLUPlusDatasetParser,
+)
 
 
 class ParserRegistry:
@@ -31,3 +43,14 @@ class ParserRegistry:
 
 # Register parsers
 ParserRegistry.register_parser("mmlu", MMLUDatasetParser)
+ParserRegistry.register_parser("mmlupro", MMLUProDatasetParser)
+ParserRegistry.register_parser("mmluredux", MMLUReduxDatasetParser)
+ParserRegistry.register_parser("tmmluplus", TMMLUPlusDatasetParser)
+ParserRegistry.register_parser("gsm8k", GSM8KDatasetParser)
+ParserRegistry.register_parser("math", MATHDatasetParser)
+ParserRegistry.register_parser("mgsm", MGSMDatasetParser)
+ParserRegistry.register_parser("humaneval", HumanEvalDatasetParser)
+ParserRegistry.register_parser("humanevalplus", HumanEvalDatasetPlusParser)
+ParserRegistry.register_parser("bbh", BBHDatasetParser)
+ParserRegistry.register_parser("mbpp", MBPPDatasetParser)
+ParserRegistry.register_parser("ifeval", IFEvalDatasetParser)

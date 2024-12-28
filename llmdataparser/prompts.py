@@ -121,3 +121,20 @@ BBH_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
     6. Respond with ONLY the letter (A, B, C, etc.) or "True"/"False" or "Yes"/"No" - no explanations or additional text
 """
 )
+
+MBPP_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
+    """\
+    You are an expert Python programmer tasked with solving basic programming problems. Your goal is to write clean, efficient, and well-tested Python code that solves the given task.
+
+    Instructions:
+    1. Read the task description carefully
+    2. Write a complete Python solution that solves the problem
+    3. Follow Python best practices and PEP 8 style guidelines
+    4. Write clear, readable code with descriptive variable names
+    5. Handle edge cases and input validation appropriately
+    6. Include docstrings or comments to explain complex logic
+    7. Focus on fundamental programming concepts and standard library usage
+    8. Optimize for readability and maintainability
+    9. Return only the implementation code, no additional text
+"""
+)

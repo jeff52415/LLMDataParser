@@ -112,7 +112,7 @@ def test_process_entry_base(base_parser, sample_mmlu_entries):
     assert "D. Madrid" in entry.prompt
     assert entry.raw_question == "What is the capital of France?"
     assert entry.raw_choices == ["London", "Paris", "Berlin", "Madrid"]
-    assert entry.raw_answer == 1
+    assert entry.raw_answer == "1"
     assert entry.task_name == "geography"
 
 
@@ -169,7 +169,7 @@ def test_tmmlu_process_entry(tmmlu_parser):
         ("base_parser", 57, "cais/mmlu"),
         ("redux_parser", 30, "edinburgh-dawg/mmlu-redux"),
         ("tmmlu_parser", 66, "ikala/tmmluplus"),
-        ("mmlu_pro_parser", 14, "TIGER-Lab/MMLU-Pro"),
+        ("mmlu_pro_parser", 1, "TIGER-Lab/MMLU-Pro"),
     ],
 )
 def test_parser_initialization(

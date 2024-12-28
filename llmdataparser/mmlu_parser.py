@@ -339,7 +339,8 @@ class MMLUProDatasetParser(HuggingFaceDatasetParser[MMLUProParseEntry]):
 
     _data_source = "TIGER-Lab/MMLU-Pro"
     _default_task = "default"
-    _task_names = [
+    _task_names = ["default"]
+    _hidden_task_names = [
         "math",
         "physics",
         "chemistry",

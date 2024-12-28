@@ -80,6 +80,8 @@ class HuggingFaceDatasetParser(DatasetParser[T]):
     _default_task: ClassVar[str]
     # _default_system_prompt is the default system prompt to use if no system prompt is specified
     _default_system_prompt: ClassVar[str]
+    # _hidden_task_names is the list of task names that are hidden in the dataset, e.g. ["math", "physics", "chemistry"]
+    _hidden_task_names: ClassVar[list[str]] = []
 
     def __init__(self, system_prompt: str | None = None, **kwargs):
         """
