@@ -15,6 +15,7 @@ from .mmlu_parser import (
     MMLUReduxDatasetParser,
     TMMLUPlusDatasetParser,
 )
+from .tmlu_parser import TMLUDatasetParser
 from .tw_legal_parser import TWLegalDatasetParser
 
 
@@ -56,3 +57,4 @@ ParserRegistry.register_parser("bbh", BBHDatasetParser)
 ParserRegistry.register_parser("mbpp", MBPPDatasetParser)
 ParserRegistry.register_parser("ifeval", IFEvalDatasetParser)
 ParserRegistry.register_parser("twlegal", TWLegalDatasetParser)
+ParserRegistry.register_parser("tmlu", TMLUDatasetParser)

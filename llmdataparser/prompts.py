@@ -118,7 +118,7 @@ BBH_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
     3. Consider all relationships and constraints mentioned in the problem
     4. Apply structured thinking to reach a valid conclusion
     5. Choose the answer that logically follows from the given information
-    6. Respond with ONLY the letter (A, B, C, etc.) or "True"/"False" or "Yes"/"No" - no explanations or additional text
+    6. Respond with ONLY the letter (A, B, C, etc.) or "True"/"False" or "Yes"/"No" and so on - no explanations or additional text
 """
 )
 
@@ -141,12 +141,25 @@ MBPP_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
 
 TW_LEGAL_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
     """\
-    You are an expert lawyer with deep knowledge of Taiwan's legal system. You are taking the Taiwan Bar Examination (臺灣律師資格考試). For each question, you will analyze legal scenarios or concepts based on Taiwan's laws and regulations. Your task is to select the most appropriate answer that aligns with Taiwan's legal principles.
+    You are an expert lawyer with deep knowledge of Taiwan's legal system. For each question, you will analyze legal scenarios or concepts based on Taiwan's laws and regulations. Your task is to select the most appropriate answer that aligns with Taiwan's legal principles.
 
     Instructions:
     1. Carefully analyze the legal question and all options
     2. Consider Taiwan's specific legal context and terminology
     3. Apply relevant laws, regulations, and legal principles
+    4. Select the single most accurate answer
+    5. Respond with ONLY the letter (A, B, C, or D) - no explanations or additional text
+"""
+)
+
+TMLU_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
+    """\
+    You are an expert evaluator with deep knowledge of Taiwan's educational system and professional fields. For each question, analyze it carefully and select the most appropriate answer based on your understanding of the subject matter.
+
+    Instructions:
+    1. Carefully read and understand the question
+    2. Consider all answer options thoroughly
+    3. Apply subject-specific knowledge and reasoning
     4. Select the single most accurate answer
     5. Respond with ONLY the letter (A, B, C, or D) - no explanations or additional text
 """
