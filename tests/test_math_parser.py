@@ -198,3 +198,68 @@ def test_different_splits_parsing(math_parser):
     assert test_count > 0
     assert train_count > 0
     assert train_count != test_count
+
+
+def test_get_dataset_description(math_parser):
+    """Test dataset description generation."""
+    description = math_parser.get_dataset_description()
+
+    assert description.name == "MATH"
+    assert "mathematical problem-solving" in description.purpose.lower()
+    assert "Hendrycks" in description.source
+    assert description.language == "English"
+    assert "competition mathematics problems" in description.format.lower()
+    assert "12,500" in description.characteristics
+    assert "step-by-step solutions" in description.characteristics.lower()
+    assert "hendrycksmath2021" in description.citation
+    assert "NeurIPS" in description.citation
+
+    # Check additional info
+    assert description.additional_info is not None
+    assert description.additional_info["difficulty_levels"] == "1-5"
+    assert "algebra" in description.additional_info["topics"]
+    assert "geometry" in description.additional_info["topics"]
+    assert description.additional_info["size"] == "12,500 problems"
+    assert "sympy" in description.additional_info["evaluation_note"].lower()
+    assert "github.com/hendrycks/math" in description.additional_info["homepage"]
+
+
+def test_get_evaluation_metrics(math_parser):
+    """Test evaluation metrics generation."""
+    metrics = math_parser.get_evaluation_metrics()
+
+    # Check total number of metrics
+    assert len(metrics) == 5
+
+    # Check primary metrics
+    primary_metrics = [m for m in metrics if m.primary]
+    assert len(primary_metrics) == 3
+
+    # Verify specific metrics exist with correct properties
+    metric_names = {m.name for m in metrics}
+    assert "symbolic_equivalence" in metric_names
+    assert "solution_presence" in metric_names
+    assert "reasoning_validity" in metric_names
+    assert "mathematical_notation" in metric_names
+    assert "solution_clarity" in metric_names
+
+    # Check specific metric properties
+    symbolic_metric = next(m for m in metrics if m.name == "symbolic_equivalence")
+    assert symbolic_metric.type == "exact_match"
+    assert symbolic_metric.primary is True
+    assert "sympy" in symbolic_metric.description.lower()
+    assert "equivalence" in symbolic_metric.description.lower()
+
+    solution_metric = next(m for m in metrics if m.name == "solution_presence")
+    assert solution_metric.type == "text"
+    assert solution_metric.primary is True
+    assert "step-by-step" in solution_metric.description.lower()
+
+    reasoning_metric = next(m for m in metrics if m.name == "reasoning_validity")
+    assert reasoning_metric.type == "text"
+    assert reasoning_metric.primary is True
+    assert "mathematical reasoning" in reasoning_metric.description.lower()
+
+    # Check non-primary metrics
+    non_primary_metrics = {m.name for m in metrics if not m.primary}
+    assert non_primary_metrics == {"mathematical_notation", "solution_clarity"}

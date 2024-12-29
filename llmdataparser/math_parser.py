@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from typing import Any, ClassVar
 
-from llmdataparser.base_parser import HuggingFaceDatasetParser, HuggingFaceParseEntry
+from llmdataparser.base_parser import (
+    DatasetDescription,
+    EvaluationMetric,
+    HuggingFaceDatasetParser,
+    HuggingFaceParseEntry,
+)
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -49,9 +54,9 @@ class MATHDatasetParser(HuggingFaceDatasetParser[MATHParseEntry]):
         "all",
     ]
     _default_task: ClassVar[str] = "all"
-    _default_system_prompt: ClassVar[
-        str
-    ] = "Solve the following mathematics problem step by step:"
+    _default_system_prompt: ClassVar[str] = (
+        "Solve the following mathematics problem step by step:"
+    )
     _valid_levels: ClassVar[set[str]] = {
         f"Level {i}" for i in range(1, 6)
     }  # Levels 1-5 are valid
@@ -83,6 +88,83 @@ class MATHDatasetParser(HuggingFaceDatasetParser[MATHParseEntry]):
             task_name=task,
             solution=row["solution"],
         )
+
+    def get_dataset_description(self) -> DatasetDescription:
+        """Returns description of the MATH dataset."""
+        return DatasetDescription.create(
+            name="MATH",
+            purpose="Measure mathematical problem-solving capabilities in machine learning models",
+            source="Hendrycks et al., UC Berkeley (NeurIPS 2021)",
+            language="English",
+            format="Competition mathematics problems with step-by-step solutions",
+            characteristics=(
+                "Collection of 12,500 challenging competition mathematics problems designed to "
+                "evaluate mathematical reasoning. Problems include step-by-step solutions that "
+                "can be used to teach models to generate answer derivations and explanations. "
+                "Problems are categorized by subject area and difficulty level (1-5)."
+            ),
+            citation="""@article{hendrycksmath2021,
+                title={Measuring Mathematical Problem Solving With the MATH Dataset},
+                author={Dan Hendrycks and Collin Burns and Saurav Kadavath and Akul Arora and Steven Basart and Eric Tang and Dawn Song and Jacob Steinhardt},
+                journal={NeurIPS},
+                year={2021}
+            }""",
+            additional_info={
+                "difficulty_levels": "1-5",
+                "topics": [
+                    "algebra",
+                    "geometry",
+                    "calculus",
+                    "prealgebra",
+                    "intermediate_algebra",
+                    "number_theory",
+                    "precalculus",
+                ],
+                "size": "12,500 problems",
+                "evaluation_note": "Exact match equivalence calculated using sympy library",
+                "homepage": "https://github.com/hendrycks/math",
+            },
+        )
+
+    def get_evaluation_metrics(self) -> list[EvaluationMetric]:
+        """Returns recommended evaluation metrics for MATH dataset."""
+        return [
+            EvaluationMetric.create(
+                name="symbolic_equivalence",
+                type="exact_match",
+                description="Verifies answer correctness using symbolic mathematics (e.g., sympy) to check mathematical equivalence.",
+                implementation="sympy_equivalence_checker",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="solution_presence",
+                type="text",
+                description="Ensures that a complete step-by-step solution is provided, demonstrating how the answer is derived.",
+                implementation="solution_completeness_checker",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="reasoning_validity",
+                type="text",
+                description="Evaluates the logical correctness and mathematical reasoning in the solution's derivation steps.",
+                implementation="reasoning_validator",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="mathematical_notation",
+                type="text",
+                description="Checks for the correct use of mathematical notation and symbolic representation to ensure clarity.",
+                implementation="notation_validator",
+                primary=False,
+            ),
+            EvaluationMetric.create(
+                name="solution_clarity",
+                type="text",
+                description="Assesses the clarity, readability, and coherence of the solution steps to enhance interpretability.",
+                implementation="clarity_scorer",
+                primary=False,
+            ),
+        ]
 
 
 if __name__ == "__main__":
