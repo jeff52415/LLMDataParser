@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Dict, List
 
 from llmdataparser.base_parser import HuggingFaceDatasetParser, HuggingFaceParseEntry
 from llmdataparser.prompts import BBH_SYSTEM_PROMPT  # You'll need to create this
@@ -86,6 +86,68 @@ class BBHDatasetParser(HuggingFaceDatasetParser[BBHParseEntry]):
             raw_answer=raw_answer,
             task_name=task,
         )
+
+    def get_dataset_description(self) -> Dict[str, str]:
+        """Returns a description of the Big Bench Hard dataset."""
+        return {
+            "name": "Big Bench Hard (BBH)",
+            "purpose": "A curated subset of 23 challenging BIG-Bench tasks where language models initially performed below average human-rater performance",
+            "source": "https://github.com/suzgunmirac/BIG-Bench-Hard",
+            "language": "English",
+            "size": "6.5k examples across 27 tasks (23 core + 4 related)",
+            "format": "Multiple choice questions with single correct answers",
+            "characteristics": (
+                "Tasks require complex multi-step reasoning and were selected based on "
+                "initial model performance below human baseline. Performance can be "
+                "significantly improved through chain-of-thought prompting. The dataset "
+                "includes 23 core tasks plus additional related tasks."
+            ),
+            "model_performance": (
+                "With chain-of-thought prompting, PaLM surpassed human performance on "
+                "10/23 tasks, while Codex surpassed human performance on 17/23 tasks"
+            ),
+            "citation": (
+                "@article{suzgun2022challenging,\n"
+                "  title={Challenging BIG-Bench Tasks and Whether Chain-of-Thought Can Solve Them},\n"
+                '  author={Suzgun, Mirac and Scales, Nathan and Sch{"a}rli, Nathanael and Gehrmann, Sebastian and Tay, Yi and Chung, Hyung Won and Chowdhery, Aakanksha and Le, Quoc V and Chi, Ed H and Zhou, Denny and Wei, Jason},\n'
+                "  journal={arXiv preprint arXiv:2210.09261},\n"
+                "  year={2022}\n"
+                "}"
+            ),
+        }
+
+    def get_evaluation_metrics(self) -> List[Dict[str, Any]]:
+        """Returns the recommended evaluation metrics for BBH dataset."""
+        return [
+            {
+                "name": "accuracy",
+                "type": "classification",
+                "description": "Proportion of exactly correct answers (after stripping parentheses)",
+                "implementation": "evaluate.load('accuracy')",
+                "primary": True,
+            },
+            {
+                "name": "human_eval_delta",
+                "type": "comparison",
+                "description": "Difference between model accuracy and average human-rater performance baseline",
+                "implementation": "custom_human_baseline_comparison",
+                "primary": True,
+            },
+            {
+                "name": "per_task_accuracy",
+                "type": "classification",
+                "description": "Accuracy broken down by individual reasoning tasks",
+                "implementation": "custom_task_accuracy",
+                "primary": False,
+            },
+            {
+                "name": "exact_match",
+                "type": "string_match",
+                "description": "Strict exact match between predicted and target answers",
+                "implementation": "evaluate.load('exact_match')",
+                "primary": False,
+            },
+        ]
 
 
 if __name__ == "__main__":
