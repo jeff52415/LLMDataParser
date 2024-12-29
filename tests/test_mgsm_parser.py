@@ -182,3 +182,89 @@ def test_system_prompt_override(mgsm_parser):
 
     entry = parser.process_entry(test_entry, task_name="en")
     assert custom_prompt in entry.prompt
+
+
+def test_get_dataset_description(mgsm_parser):
+    """Test dataset description generation."""
+    description = mgsm_parser.get_dataset_description()
+
+    assert description.name == "Multilingual Grade School Math (MGSM)"
+    assert "multilingual chain-of-thought reasoning" in description.purpose.lower()
+    assert "juletxara/mgsm" in description.source
+    assert description.language == "Multilingual (11 languages)"
+    assert "word problems" in description.format.lower()
+    assert "numerical answers" in description.format.lower()
+    assert "solution steps" in description.format.lower()
+
+    # Check characteristics
+    assert "250" in description.characteristics
+    assert "gsm8k" in description.characteristics.lower()
+    assert "translations" in description.characteristics.lower()
+    assert "mathematical reasoning" in description.characteristics.lower()
+
+    # Check citations
+    assert "shi2022language" in description.citation
+    assert "cobbe2021gsm8k" in description.citation
+    assert (
+        "Language Models are Multilingual Chain-of-Thought Reasoners"
+        in description.citation
+    )
+    assert "Training Verifiers to Solve Math Word Problems" in description.citation
+
+    # Check additional info
+    assert description.additional_info is not None
+    assert len(description.additional_info["languages"]) == 11
+    assert "English" in description.additional_info["languages"]
+    assert "Chinese" in description.additional_info["languages"]
+    assert (
+        description.additional_info["size"]
+        == "250 problems translated into each language"
+    )
+    assert description.additional_info["base_dataset"] == "GSM8K (Grade School Math 8K)"
+
+
+def test_get_evaluation_metrics(mgsm_parser):
+    """Test evaluation metrics generation."""
+    metrics = mgsm_parser.get_evaluation_metrics()
+
+    # Check total number of metrics
+    assert len(metrics) == 4
+
+    # Check primary metrics
+    primary_metrics = [m for m in metrics if m.primary]
+    assert len(primary_metrics) == 3
+
+    # Verify specific metrics exist with correct properties
+    metric_names = {m.name for m in metrics}
+    assert "exact_match" in metric_names
+    assert "solution_validity" in metric_names
+    assert "step_accuracy" in metric_names
+    assert "cross_lingual_consistency" in metric_names
+
+    # Check specific metric properties
+    exact_match_metric = next(m for m in metrics if m.name == "exact_match")
+    assert exact_match_metric.type == "string"
+    assert exact_match_metric.primary is True
+    assert "numerical answers" in exact_match_metric.description.lower()
+    assert "custom_exact_match" in exact_match_metric.implementation
+
+    solution_metric = next(m for m in metrics if m.name == "solution_validity")
+    assert solution_metric.type == "text"
+    assert solution_metric.primary is True
+    assert "mathematically valid" in solution_metric.description.lower()
+    assert "custom_solution_validator" in solution_metric.implementation
+
+    step_metric = next(m for m in metrics if m.name == "step_accuracy")
+    assert step_metric.type == "numerical"
+    assert step_metric.primary is True
+    assert "calculation steps" in step_metric.description.lower()
+    assert "custom_step_accuracy" in step_metric.implementation
+
+    # Check cross-lingual metric specifically
+    cross_lingual_metric = next(
+        m for m in metrics if m.name == "cross_lingual_consistency"
+    )
+    assert cross_lingual_metric.type == "comparison"
+    assert cross_lingual_metric.primary is False
+    assert "different language versions" in cross_lingual_metric.description.lower()
+    assert "custom_language_comparator" in cross_lingual_metric.implementation
