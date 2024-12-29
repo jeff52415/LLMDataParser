@@ -220,17 +220,17 @@ class BaseMMLUDatasetParser(MMLUDatasetParser):
                 "requires both extensive world knowledge and strong problem-solving capabilities."
             ),
             citation="""@article{hendryckstest2021,
-title={Measuring Massive Multitask Language Understanding},
-author={Dan Hendrycks and Collin Burns and Steven Basart and Andy Zou and Mantas Mazeika and Dawn Song and Jacob Steinhardt},
-journal={Proceedings of the International Conference on Learning Representations (ICLR)},
-year={2021}
-}
+    title={Measuring Massive Multitask Language Understanding},
+    author={Dan Hendrycks and Collin Burns and Steven Basart and Andy Zou and Mantas Mazeika and Dawn Song and Jacob Steinhardt},
+    journal={Proceedings of the International Conference on Learning Representations (ICLR)},
+    year={2021}
+    }
 @article{hendrycks2021ethics,
-title={Aligning AI With Shared Human Values},
-author={Dan Hendrycks and Collin Burns and Steven Basart and Andrew Critch and Jerry Li and Dawn Song and Jacob Steinhardt},
-journal={Proceedings of the International Conference on Learning Representations (ICLR)},
-year={2021}
-}""",
+    title={Aligning AI With Shared Human Values},
+    author={Dan Hendrycks and Collin Burns and Steven Basart and Andrew Critch and Jerry Li and Dawn Song and Jacob Steinhardt},
+    journal={Proceedings of the International Conference on Learning Representations (ICLR)},
+    year={2021}
+    }""",
             additional_info={
                 "subjects": "57 tasks/subjects",
                 "categories": [
@@ -340,13 +340,13 @@ class MMLUReduxDatasetParser(MMLUDatasetParser):
                 "against credible sources."
             ),
             citation="""@misc{gema2024mmlu,
-title={Are We Done with MMLU?},
-author={Aryo Pradipta Gema and Joshua Ong Jun Leang and Giwon Hong and Alessio Devoto and Alberto Carlo Maria Mancino and Rohit Saxena and Xuanli He and Yu Zhao and Xiaotang Du and Mohammad Reza Ghasemi Madani and Claire Barale and Robert McHardy and Joshua Harris and Jean Kaddour and Emile van Krieken and Pasquale Minervini},
-year={2024},
-eprint={2406.04127},
-archivePrefix={arXiv},
-primaryClass={cs.CL}
-}""",
+    title={Are We Done with MMLU?},
+    author={Aryo Pradipta Gema and Joshua Ong Jun Leang and Giwon Hong and Alessio Devoto and Alberto Carlo Maria Mancino and Rohit Saxena and Xuanli He and Yu Zhao and Xiaotang Du and Mohammad Reza Ghasemi Madani and Claire Barale and Robert McHardy and Joshua Harris and Jean Kaddour and Emile van Krieken and Pasquale Minervini},
+    year={2024},
+    eprint={2406.04127},
+    archivePrefix={arXiv},
+    primaryClass={cs.CL}
+    }""",
             additional_info={
                 "size": "3,000 questions (100 per subject)",
                 "subjects": "30 MMLU subjects",
@@ -503,11 +503,11 @@ class TMMLUPlusDatasetParser(MMLUDatasetParser):
                 "parameters ranging from 1.8B to 72B."
             ),
             citation="""@article{ikala2024improved,
-title={An Improved Traditional Chinese Evaluation Suite for Foundation Model},
-author={Tam, Zhi-Rui and Pai, Ya-Ting and Lee, Yen-Wei and Cheng, Sega and Shuai, Hong-Han},
-journal={arXiv preprint arXiv:2403.01858},
-year={2024}
-}""",
+    title={An Improved Traditional Chinese Evaluation Suite for Foundation Model},
+    author={Tam, Zhi-Rui and Pai, Ya-Ting and Lee, Yen-Wei and Cheng, Sega and Shuai, Hong-Han},
+    journal={arXiv preprint arXiv:2403.01858},
+    year={2024}
+    }""",
             additional_info={
                 "subjects": "66 diverse subjects",
                 "difficulty_levels": ["Elementary", "Secondary", "Professional"],
@@ -630,11 +630,11 @@ class MMLUProDatasetParser(HuggingFaceDatasetParser[MMLUProParseEntry]):
                 "with expert review and GPT-4 assisted distractor generation."
             ),
             citation="""@article{wang2024mmlu,
-title={Mmlu-pro: A more robust and challenging multi-task language understanding benchmark},
-author={Wang, Yubo and Ma, Xueguang and Zhang, Ge and Ni, Yuansheng and Chandra, Abhranil and Guo, Shiguang and Ren, Weiming and Arulraj, Aaran and He, Xuan and Jiang, Ziyan and others},
-journal={arXiv preprint arXiv:2406.01574},
-year={2024}
-}""",
+    title={Mmlu-pro: A more robust and challenging multi-task language understanding benchmark},
+    author={Wang, Yubo and Ma, Xueguang and Zhang, Ge and Ni, Yuansheng and Chandra, Abhranil and Guo, Shiguang and Ren, Weiming and Arulraj, Aaran and He, Xuan and Jiang, Ziyan and others},
+    journal={arXiv preprint arXiv:2406.01574},
+    year={2024}
+    }""",
             additional_info={
                 "size": "12,000 complex questions",
                 "options": "Up to 10 choices per question",

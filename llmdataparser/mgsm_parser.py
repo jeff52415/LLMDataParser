@@ -113,18 +113,18 @@ class MGSMDatasetParser(HuggingFaceDatasetParser[MGSMParseEntry]):
                 "language models' ability to perform mathematical reasoning across different languages."
             ),
             citation="""@misc{shi2022language,
-title={Language Models are Multilingual Chain-of-Thought Reasoners},
-author={Freda Shi and Mirac Suzgun and Markus Freitag and Xuezhi Wang and Suraj Srivats and Soroush Vosoughi and Hyung Won Chung and Yi Tay and Sebastian Ruder and Denny Zhou and Dipanjan Das and Jason Wei},
-year={2022},
-eprint={2210.03057},
-archivePrefix={arXiv},
-primaryClass={cs.CL}
-}
+    title={Language Models are Multilingual Chain-of-Thought Reasoners},
+    author={Freda Shi and Mirac Suzgun and Markus Freitag and Xuezhi Wang and Suraj Srivats and Soroush Vosoughi and Hyung Won Chung and Yi Tay and Sebastian Ruder and Denny Zhou and Dipanjan Das and Jason Wei},
+    year={2022},
+    eprint={2210.03057},
+    archivePrefix={arXiv},
+    primaryClass={cs.CL}
+    }
 @article{cobbe2021gsm8k,
-title={Training Verifiers to Solve Math Word Problems},
-author={Cobbe, Karl and Kosaraju, Vineet and Bavarian, Mohammad and Chen, Mark and Jun, Heewoo and Kaiser, Lukasz and Plappert, Matthias and Tworek, Jerry and Hilton, Jacob and Nakano, Reiichiro and Hesse, Christopher and Schulman, John},
-journal={arXiv preprint arXiv:2110.14168},
-year={2021}
+    title={Training Verifiers to Solve Math Word Problems},
+    author={Cobbe, Karl and Kosaraju, Vineet and Bavarian, Mohammad and Chen, Mark and Jun, Heewoo and Kaiser, Lukasz and Plappert, Matthias and Tworek, Jerry and Hilton, Jacob and Nakano, Reiichiro and Hesse, Christopher and Schulman, John},
+    journal={arXiv preprint arXiv:2110.14168},
+    year={2021}
 }""",
             additional_info={
                 "languages": [
