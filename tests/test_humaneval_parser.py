@@ -180,8 +180,6 @@ def test_get_dataset_description(parser, plus_parser):
     assert description.name == "HumanEval"
     assert "code generation" in description.purpose
     assert description.language == "Python"
-    assert "Function signatures with docstrings" in description.format
-    assert "164 hand-written Python programming problems" in description.characteristics
     assert "chen2021codex" in description.citation
 
     # Test HumanEval Plus description

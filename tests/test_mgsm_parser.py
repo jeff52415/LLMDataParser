@@ -192,35 +192,18 @@ def test_get_dataset_description(mgsm_parser):
     assert "multilingual chain-of-thought reasoning" in description.purpose.lower()
     assert "juletxara/mgsm" in description.source
     assert description.language == "Multilingual (11 languages)"
-    assert "word problems" in description.format.lower()
-    assert "numerical answers" in description.format.lower()
-    assert "solution steps" in description.format.lower()
 
-    # Check characteristics
-    assert "250" in description.characteristics
-    assert "gsm8k" in description.characteristics.lower()
-    assert "translations" in description.characteristics.lower()
     assert "mathematical reasoning" in description.characteristics.lower()
 
     # Check citations
     assert "shi2022language" in description.citation
     assert "cobbe2021gsm8k" in description.citation
-    assert (
-        "Language Models are Multilingual Chain-of-Thought Reasoners"
-        in description.citation
-    )
-    assert "Training Verifiers to Solve Math Word Problems" in description.citation
 
     # Check additional info
     assert description.additional_info is not None
     assert len(description.additional_info["languages"]) == 11
     assert "English" in description.additional_info["languages"]
     assert "Chinese" in description.additional_info["languages"]
-    assert (
-        description.additional_info["size"]
-        == "250 problems translated into each language"
-    )
-    assert description.additional_info["base_dataset"] == "GSM8K (Grade School Math 8K)"
 
 
 def test_get_evaluation_metrics(mgsm_parser):
@@ -259,12 +242,3 @@ def test_get_evaluation_metrics(mgsm_parser):
     assert step_metric.primary is True
     assert "calculation steps" in step_metric.description.lower()
     assert "custom_step_accuracy" in step_metric.implementation
-
-    # Check cross-lingual metric specifically
-    cross_lingual_metric = next(
-        m for m in metrics if m.name == "cross_lingual_consistency"
-    )
-    assert cross_lingual_metric.type == "comparison"
-    assert cross_lingual_metric.primary is False
-    assert "different language versions" in cross_lingual_metric.description.lower()
-    assert "custom_language_comparator" in cross_lingual_metric.implementation

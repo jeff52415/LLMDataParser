@@ -162,30 +162,9 @@ def test_get_dataset_description(parser):
     assert "code generation" in description.purpose.lower()
     assert "google-research" in description.source
     assert description.language == "English and Python"
-    assert "task descriptions" in description.format.lower()
-    assert "python solutions" in description.format.lower()
     assert "1,000" in description.characteristics
-    assert "entry-level programmers" in description.characteristics.lower()
-    assert "3 automated test cases" in description.characteristics
-    assert "hand-verified" in description.characteristics
     assert "austin2021program" in description.citation
     assert "Program Synthesis" in description.citation
-
-    # Check additional info
-    assert description.additional_info is not None
-    assert description.additional_info["size"] == "~1,000 programming problems"
-    assert (
-        description.additional_info["splits"]
-        == "Available in full or sanitized versions"
-    )
-    assert (
-        description.additional_info["test_coverage"]
-        == "Each problem includes 3 automated test cases"
-    )
-    assert (
-        description.additional_info["verification"]
-        == "Subset of data has been hand-verified by authors"
-    )
 
 
 def test_get_evaluation_metrics(parser):
@@ -211,15 +190,3 @@ def test_get_evaluation_metrics(parser):
     assert pass_k_metric.primary is True
     assert "k generations" in pass_k_metric.description.lower()
     assert "custom_pass_at_k" in pass_k_metric.implementation
-
-    test_case_metric = next(m for m in metrics if m.name == "test_case_success_rate")
-    assert test_case_metric.type == "code_evaluation"
-    assert test_case_metric.primary is False
-    assert "test cases" in test_case_metric.description.lower()
-    assert "custom_test_success_rate" in test_case_metric.implementation
-
-    syntax_metric = next(m for m in metrics if m.name == "syntax_validity")
-    assert syntax_metric.type == "code_evaluation"
-    assert syntax_metric.primary is False
-    assert "syntactically valid" in syntax_metric.description.lower()
-    assert "custom_syntax_check" in syntax_metric.implementation

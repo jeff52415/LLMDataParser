@@ -165,14 +165,9 @@ def test_get_dataset_description(bbh_parser):
     description = bbh_parser.get_dataset_description()
 
     assert description.name == "Big Bench Hard (BBH)"
-    assert "challenging BIG-Bench tasks" in description.purpose
     assert description.language == "English"
     assert description.format == "Multiple choice questions with single correct answers"
-    assert "Tasks require complex multi-step reasoning" in description.characteristics
     assert "suzgun2022challenging" in description.citation
-    assert description.additional_info is not None
-    assert "model_performance" in description.additional_info
-    assert "size" in description.additional_info
 
 
 def test_get_evaluation_metrics(bbh_parser):

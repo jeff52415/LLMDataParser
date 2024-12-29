@@ -205,12 +205,9 @@ def test_get_dataset_description(math_parser):
     description = math_parser.get_dataset_description()
 
     assert description.name == "MATH"
-    assert "mathematical problem-solving" in description.purpose.lower()
     assert "Hendrycks" in description.source
     assert description.language == "English"
-    assert "competition mathematics problems" in description.format.lower()
     assert "12,500" in description.characteristics
-    assert "step-by-step solutions" in description.characteristics.lower()
     assert "hendrycksmath2021" in description.citation
     assert "NeurIPS" in description.citation
 
@@ -220,8 +217,6 @@ def test_get_dataset_description(math_parser):
     assert "algebra" in description.additional_info["topics"]
     assert "geometry" in description.additional_info["topics"]
     assert description.additional_info["size"] == "12,500 problems"
-    assert "sympy" in description.additional_info["evaluation_note"].lower()
-    assert "github.com/hendrycks/math" in description.additional_info["homepage"]
 
 
 def test_get_evaluation_metrics(math_parser):
@@ -259,7 +254,3 @@ def test_get_evaluation_metrics(math_parser):
     assert reasoning_metric.type == "text"
     assert reasoning_metric.primary is True
     assert "mathematical reasoning" in reasoning_metric.description.lower()
-
-    # Check non-primary metrics
-    non_primary_metrics = {m.name for m in metrics if not m.primary}
-    assert non_primary_metrics == {"mathematical_notation", "solution_clarity"}

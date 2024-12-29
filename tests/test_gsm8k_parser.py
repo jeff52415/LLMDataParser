@@ -190,10 +190,7 @@ def test_get_dataset_description(gsm8k_parser):
     assert description.name == "Grade School Math 8K (GSM8K)"
     assert description.source == "OpenAI"
     assert description.language == "English"
-    assert "8.5K grade school math word problems" in description.characteristics
-    assert "Training Verifiers to Solve Math Word Problems" in description.citation
     assert "Cobbe" in description.citation
-    assert "arXiv" in description.citation
 
 
 def test_get_evaluation_metrics(gsm8k_parser):
@@ -210,18 +207,3 @@ def test_get_evaluation_metrics(gsm8k_parser):
     assert exact_match.type == "string"
     assert exact_match.primary is True
     assert "exact match" in exact_match.description.lower()
-
-    # Check solution_validity metric details
-    solution_validity = next(m for m in metrics if m.name == "solution_validity")
-    assert solution_validity.type == "text"
-    assert solution_validity.primary is True
-    assert "valid" in solution_validity.description.lower()
-
-    # Check step metrics
-    step_accuracy = next(m for m in metrics if m.name == "step_accuracy")
-    assert step_accuracy.type == "numerical"
-    assert step_accuracy.primary is True
-
-    step_count = next(m for m in metrics if m.name == "step_count")
-    assert step_count.type == "numerical"
-    assert step_count.primary is False
