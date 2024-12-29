@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from typing import Any, Final
 
-from llmdataparser.base_parser import HuggingFaceDatasetParser, HuggingFaceParseEntry
+from llmdataparser.base_parser import (
+    DatasetDescription,
+    EvaluationMetric,
+    HuggingFaceDatasetParser,
+    HuggingFaceParseEntry,
+)
 from llmdataparser.prompts import MMLU_PRO_SYSTEM_PROMPT, MMLU_SYSTEM_PROMPT
 
 MMLU_VALID_ANSWERS: Final[set[str]] = {"A", "B", "C", "D"}
@@ -200,6 +205,86 @@ class BaseMMLUDatasetParser(MMLUDatasetParser):
         "world_religions",
     ]
 
+    def get_dataset_description(self) -> DatasetDescription:
+        """Returns a description of the MMLU dataset."""
+        return DatasetDescription.create(
+            name="Massive Multitask Language Understanding (MMLU)",
+            purpose="Evaluate models' extensive world knowledge and problem-solving abilities across diverse branches of knowledge",
+            source="https://huggingface.co/datasets/cais/mmlu",
+            language="English",
+            format="Multiple choice questions with four options (A, B, C, D)",
+            characteristics=(
+                "Comprehensive evaluation benchmark spanning humanities, social sciences, hard sciences, "
+                "and other essential areas of knowledge. The test includes 57 subjects such as "
+                "elementary mathematics, US history, computer science, and law. Success on this test "
+                "requires both extensive world knowledge and strong problem-solving capabilities."
+            ),
+            citation="""@article{hendryckstest2021,
+                            title={Measuring Massive Multitask Language Understanding},
+                            author={Dan Hendrycks and Collin Burns and Steven Basart and Andy Zou and Mantas Mazeika and Dawn Song and Jacob Steinhardt},
+                            journal={Proceedings of the International Conference on Learning Representations (ICLR)},
+                            year={2021}
+                        }
+                        @article{hendrycks2021ethics,
+                            title={Aligning AI With Shared Human Values},
+                            author={Dan Hendrycks and Collin Burns and Steven Basart and Andrew Critch and Jerry Li and Dawn Song and Jacob Steinhardt},
+                            journal={Proceedings of the International Conference on Learning Representations (ICLR)},
+                            year={2021}
+                        }""",
+            additional_info={
+                "subjects": "57 tasks/subjects",
+                "categories": [
+                    "Humanities",
+                    "Social Sciences",
+                    "Hard Sciences",
+                    "Other",
+                ],
+                "example_subjects": [
+                    "Elementary Mathematics",
+                    "US History",
+                    "Computer Science",
+                    "Law",
+                ],
+                "requirements": [
+                    "Extensive world knowledge",
+                    "Problem solving ability",
+                ],
+            },
+        )
+
+    def get_evaluation_metrics(self) -> list[EvaluationMetric]:
+        """Returns the recommended evaluation metrics for MMLU dataset."""
+        return [
+            EvaluationMetric.create(
+                name="accuracy",
+                type="classification",
+                description="Proportion of correctly answered multiple-choice questions (exact match with A, B, C, D)",
+                implementation="evaluate.load('accuracy')",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="subject_accuracy",
+                type="classification",
+                description="Per-subject accuracy scores across all 57 tasks",
+                implementation="custom_subject_accuracy",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="category_accuracy",
+                type="classification",
+                description="Accuracy grouped by major categories (Humanities, Social Sciences, Hard Sciences, Other)",
+                implementation="custom_category_accuracy",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="task_correlation",
+                type="analysis",
+                description="Analysis of performance correlations between different subjects/tasks",
+                implementation="custom_task_correlation",
+                primary=False,
+            ),
+        ]
+
 
 class MMLUReduxDatasetParser(MMLUDatasetParser):
     """Parser for the MMLU Redux dataset."""
@@ -238,6 +323,75 @@ class MMLUReduxDatasetParser(MMLUDatasetParser):
         "public_relations",
         "virology",
     ]
+
+    def get_dataset_description(self) -> DatasetDescription:
+        """Returns description of the MMLU Redux dataset."""
+        return DatasetDescription.create(
+            name="MMLU Redux",
+            purpose="Provide a manually re-annotated subset of MMLU with error analysis and corrections",
+            source="https://huggingface.co/datasets/edinburgh-dawg/mmlu-redux",
+            language="English",
+            format="Multiple choice questions with four options (A, B, C, D)",
+            characteristics=(
+                "A carefully curated subset of 3,000 questions across 30 MMLU subjects, "
+                "manually re-annotated to identify and classify various types of errors. "
+                "The dataset maintains the original questions but provides additional "
+                "error annotations and corrections based on expert review and verification "
+                "against credible sources."
+            ),
+            citation="""@misc{gema2024mmlu,
+                        title={Are We Done with MMLU?},
+                        author={Aryo Pradipta Gema and Joshua Ong Jun Leang and Giwon Hong and Alessio Devoto and Alberto Carlo Maria Mancino and Rohit Saxena and Xuanli He and Yu Zhao and Xiaotang Du and Mohammad Reza Ghasemi Madani and Claire Barale and Robert McHardy and Joshua Harris and Jean Kaddour and Emile van Krieken and Pasquale Minervini},
+                        year={2024},
+                        eprint={2406.04127},
+                        archivePrefix={arXiv},
+                        primaryClass={cs.CL}
+                    }""",
+            additional_info={
+                "size": "3,000 questions (100 per subject)",
+                "subjects": "30 MMLU subjects",
+                "license": "CC-BY-4.0",
+                "error_types": {
+                    "Question Assessment": [
+                        "Bad Question Clarity",
+                        "Bad Options Clarity",
+                    ],
+                    "Ground Truth Verification": [
+                        "No Correct Answer",
+                        "Multiple Correct Answers",
+                        "Wrong Ground Truth",
+                    ],
+                },
+                "verification_process": "Expert review with source verification",
+                "base_dataset": "cais/mmlu",
+            },
+        )
+
+    def get_evaluation_metrics(self) -> list[EvaluationMetric]:
+        """Returns the recommended evaluation metrics for MMLU Redux dataset."""
+        return [
+            EvaluationMetric.create(
+                name="accuracy",
+                type="classification",
+                description="Proportion of correctly answered multiple-choice questions (exact match with A, B, C, D)",
+                implementation="evaluate.load('accuracy')",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="subject_accuracy",
+                type="classification",
+                description="Per-subject accuracy scores across 30 subjects (100 questions each)",
+                implementation="custom_subject_accuracy",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="question_clarity",
+                type="analysis",
+                description="Analysis of performance on questions with different clarity issues",
+                implementation="custom_clarity_analysis",
+                primary=False,
+            ),
+        ]
 
 
 class TMMLUPlusDatasetParser(MMLUDatasetParser):
@@ -333,6 +487,65 @@ class TMMLUPlusDatasetParser(MMLUDatasetParser):
             prompt, raw_answer, raw_question, raw_choices, raw_answer, task
         )
 
+    def get_dataset_description(self) -> DatasetDescription:
+        """Returns description of the TMMLU+ dataset."""
+        return DatasetDescription.create(
+            name="Traditional Chinese Massive Multitask Language Understanding Plus (TMMLU+)",
+            purpose="Evaluate language models' understanding and reasoning capabilities in Traditional Chinese across diverse subjects",
+            source="https://huggingface.co/datasets/ikala/tmmluplus",
+            language="Traditional Chinese",
+            format="Multiple choice questions with four options (A, B, C, D)",
+            characteristics=(
+                "A comprehensive evaluation benchmark featuring 66 subjects from elementary "
+                "to professional level. The dataset is six times larger than the original TMMLU "
+                "and provides more balanced subject coverage. Includes benchmark results from "
+                "both closed-source models and 20 open-weight Chinese language models with "
+                "parameters ranging from 1.8B to 72B."
+            ),
+            citation="""@article{ikala2024improved,
+                    title={An Improved Traditional Chinese Evaluation Suite for Foundation Model},
+                    author={Tam, Zhi-Rui and Pai, Ya-Ting and Lee, Yen-Wei and Cheng, Sega and Shuai, Hong-Han},
+                    journal={arXiv preprint arXiv:2403.01858},
+                    year={2024}
+                    }""",
+            additional_info={
+                "subjects": "66 diverse subjects",
+                "difficulty_levels": ["Elementary", "Secondary", "Professional"],
+                "model_benchmarks": {
+                    "model_types": ["Closed-source models", "Open-weight Chinese LLMs"],
+                    "parameter_range": "1.8B - 72B",
+                },
+                "comparison": "6x larger than original TMMLU",
+                "script": "Traditional Chinese",
+            },
+        )
+
+    def get_evaluation_metrics(self) -> list[EvaluationMetric]:
+        """Returns the recommended evaluation metrics for TMMLU+ dataset."""
+        return [
+            EvaluationMetric.create(
+                name="accuracy",
+                type="classification",
+                description="Overall percentage of correctly answered multiple-choice questions",
+                implementation="evaluate.load('accuracy')",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="subject_accuracy",
+                type="classification",
+                description="Per-subject accuracy scores across all 66 subjects",
+                implementation="custom_subject_accuracy",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="difficulty_analysis",
+                type="classification",
+                description="Performance analysis across different difficulty levels (elementary to professional)",
+                implementation="custom_difficulty_analysis",
+                primary=False,
+            ),
+        ]
+
 
 class MMLUProDatasetParser(HuggingFaceDatasetParser[MMLUProParseEntry]):
     """Parser for the MMLU Pro dataset."""
@@ -400,6 +613,91 @@ class MMLUProDatasetParser(HuggingFaceDatasetParser[MMLUProParseEntry]):
         return MMLUProParseEntry.create(
             prompt, answer_letter, raw_question, raw_choices, raw_answer, final_task
         )
+
+    def get_dataset_description(self) -> DatasetDescription:
+        """Returns description of the MMLU Pro dataset."""
+        return DatasetDescription.create(
+            name="MMLU Pro",
+            purpose="Provide a more robust and challenging multi-task language understanding benchmark with enhanced reasoning requirements",
+            source="https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro",
+            language="English",
+            format="Multiple choice questions with up to 10 options (expanded from original 4)",
+            characteristics=(
+                "A more challenging version of MMLU containing 12K complex questions across various "
+                "disciplines. Features increased number of options (up to 10), stronger focus on "
+                "reasoning over pure knowledge, and reduced sensitivity to prompt variations. "
+                "Questions are sourced from original MMLU, STEM websites, TheoremQA, and SciBench, "
+                "with expert review and GPT-4 assisted distractor generation."
+            ),
+            citation="""@article{wang2024mmlu,
+                    title={Mmlu-pro: A more robust and challenging multi-task language understanding benchmark},
+                    author={Wang, Yubo and Ma, Xueguang and Zhang, Ge and Ni, Yuansheng and Chandra, Abhranil and Guo, Shiguang and Ren, Weiming and Arulraj, Aaran and He, Xuan and Jiang, Ziyan and others},
+                    journal={arXiv preprint arXiv:2406.01574},
+                    year={2024}
+                    }""",
+            additional_info={
+                "size": "12,000 complex questions",
+                "options": "Up to 10 choices per question",
+                "sources": [
+                    "Original MMLU (filtered)",
+                    "STEM Website",
+                    "TheoremQA",
+                    "SciBench",
+                ],
+                "enhanced_subjects": [
+                    "Biology",
+                    "Business",
+                    "Chemistry",
+                    "Computer Science",
+                    "Economics",
+                    "Engineering",
+                    "Math",
+                    "Physics",
+                    "Psychology",
+                ],
+                "construction_process": [
+                    "Initial MMLU filtering",
+                    "Question collection from multiple sources",
+                    "GPT-4 assisted option augmentation",
+                    "Expert review by 10+ experts",
+                ],
+                "prompt_sensitivity": "2% (reduced from 4-5% in MMLU)",
+                "reasoning_improvement": "20% higher CoT performance compared to PPL",
+            },
+        )
+
+    def get_evaluation_metrics(self) -> list[EvaluationMetric]:
+        """Returns the recommended evaluation metrics for MMLU Pro dataset."""
+        return [
+            EvaluationMetric.create(
+                name="accuracy",
+                type="classification",
+                description="Proportion of correctly answered multiple-choice questions (exact match)",
+                implementation="evaluate.load('accuracy')",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="subject_accuracy",
+                type="classification",
+                description="Per-subject accuracy scores with focus on enhanced subjects",
+                implementation="custom_subject_accuracy",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="reasoning_analysis",
+                type="analysis",
+                description="Comparison of Chain-of-Thought vs standard PPL performance",
+                implementation="custom_reasoning_analysis",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="prompt_robustness",
+                type="analysis",
+                description="Analysis of performance stability across different prompt variations",
+                implementation="custom_prompt_sensitivity",
+                primary=False,
+            ),
+        ]
 
 
 if __name__ == "__main__":

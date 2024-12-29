@@ -218,3 +218,97 @@ def test_different_splits_parsing(base_parser):
     assert test_count > 0
     assert val_count > 0
     assert test_count != val_count
+
+
+def test_base_mmlu_dataset_description(base_parser):
+    """Test dataset description for base MMLU."""
+    description = base_parser.get_dataset_description()
+
+    assert description.name == "Massive Multitask Language Understanding (MMLU)"
+    assert "cais/mmlu" in description.source
+    assert description.language == "English"
+
+    # Check characteristics
+    assert "57 subjects" in description.characteristics.lower()
+
+    # Check citation
+    assert "hendryckstest2021" in description.citation
+
+
+def test_mmlu_redux_dataset_description(redux_parser):
+    """Test dataset description for MMLU Redux."""
+    description = redux_parser.get_dataset_description()
+
+    assert description.name == "MMLU Redux"
+    assert "manually re-annotated" in description.purpose.lower()
+    assert "edinburgh-dawg/mmlu-redux" in description.source
+    assert description.language == "English"
+
+    # Check characteristics
+    assert "3,000" in description.characteristics
+
+
+def test_tmmlu_plus_dataset_description(tmmlu_parser):
+    """Test dataset description for TMMLU+."""
+    description = tmmlu_parser.get_dataset_description()
+
+    assert "ikala/tmmluplus" in description.source
+    assert description.language == "Traditional Chinese"
+
+    # Check characteristics
+    assert "66 subjects" in description.characteristics.lower()
+
+    # Check citation
+    assert "ikala2024improved" in description.citation
+
+
+def test_mmlu_pro_dataset_description(mmlu_pro_parser):
+    """Test dataset description for MMLU Pro."""
+    description = mmlu_pro_parser.get_dataset_description()
+
+    assert description.name == "MMLU Pro"
+    assert "challenging" in description.purpose.lower()
+    assert "TIGER-Lab/MMLU-Pro" in description.source
+    assert description.language == "English"
+
+
+def test_base_mmlu_evaluation_metrics(base_parser):
+    """Test evaluation metrics for base MMLU."""
+    metrics = base_parser.get_evaluation_metrics()
+
+    assert len(metrics) >= 3
+    metric_names = {m.name for m in metrics}
+
+    assert "accuracy" in metric_names
+    assert "subject_accuracy" in metric_names
+    assert "category_accuracy" in metric_names
+
+    accuracy_metric = next(m for m in metrics if m.name == "accuracy")
+    assert accuracy_metric.type == "classification"
+    assert accuracy_metric.primary is True
+    assert "multiple-choice" in accuracy_metric.description.lower()
+
+
+def test_mmlu_redux_evaluation_metrics(redux_parser):
+    """Test evaluation metrics for MMLU Redux."""
+    metrics = redux_parser.get_evaluation_metrics()
+
+    metric_names = {m.name for m in metrics}
+    assert "question_clarity" in metric_names
+
+
+def test_tmmlu_plus_evaluation_metrics(tmmlu_parser):
+    """Test evaluation metrics for TMMLU+."""
+    metrics = tmmlu_parser.get_evaluation_metrics()
+
+    metric_names = {m.name for m in metrics}
+    assert "difficulty_analysis" in metric_names
+
+
+def test_mmlu_pro_evaluation_metrics(mmlu_pro_parser):
+    """Test evaluation metrics for MMLU Pro."""
+    metrics = mmlu_pro_parser.get_evaluation_metrics()
+
+    metric_names = {m.name for m in metrics}
+    assert "reasoning_analysis" in metric_names
+    assert "prompt_robustness" in metric_names
