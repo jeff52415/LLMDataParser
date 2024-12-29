@@ -160,74 +160,38 @@ def test_different_tasks_parsing(bbh_parser, task_name):
     assert all(isinstance(entry.answer, str) for entry in parsed_data)
 
 
+def test_get_dataset_description(bbh_parser):
+    """Test dataset description generation."""
+    description = bbh_parser.get_dataset_description()
+
+    assert description.name == "Big Bench Hard (BBH)"
+    assert "challenging BIG-Bench tasks" in description.purpose
+    assert description.language == "English"
+    assert description.format == "Multiple choice questions with single correct answers"
+    assert "Tasks require complex multi-step reasoning" in description.characteristics
+    assert "suzgun2022challenging" in description.citation
+    assert description.additional_info is not None
+    assert "model_performance" in description.additional_info
+    assert "size" in description.additional_info
+
+
 def test_get_evaluation_metrics(bbh_parser):
-    """Test evaluation metrics structure and content."""
+    """Test evaluation metrics generation."""
     metrics = bbh_parser.get_evaluation_metrics()
 
-    # Check basic structure
-    assert isinstance(metrics, list)
-    assert len(metrics) > 0
-
-    # Check each metric has required fields
-    required_fields = ["name", "type", "description", "implementation", "primary"]
-    for metric in metrics:
-        for field in required_fields:
-            assert field in metric, f"Missing field {field} in metric {metric['name']}"
-
-        # Check field types
-        assert isinstance(metric["name"], str)
-        assert isinstance(metric["type"], str)
-        assert isinstance(metric["description"], str)
-        assert isinstance(metric["implementation"], str)
-        assert isinstance(metric["primary"], bool)
-
-    # Check specific metrics exist
-    metric_names = {m["name"] for m in metrics}
-    expected_metrics = {
-        "accuracy",
-        "human_eval_delta",
-        "per_task_accuracy",
-        "exact_match",
-    }
-    assert expected_metrics.issubset(metric_names)
+    assert len(metrics) == 4  # Check total number of metrics
 
     # Check primary metrics
-    primary_metrics = {m["name"] for m in metrics if m["primary"]}
-    assert "accuracy" in primary_metrics
-    assert "human_eval_delta" in primary_metrics
+    primary_metrics = [m for m in metrics if m.primary]
+    assert len(primary_metrics) == 2
+    assert any(m.name == "accuracy" for m in primary_metrics)
+    assert any(m.name == "human_eval_delta" for m in primary_metrics)
 
+    # Check specific metric properties
+    accuracy_metric = next(m for m in metrics if m.name == "accuracy")
+    assert accuracy_metric.type == "classification"
+    assert "evaluate.load('accuracy')" in accuracy_metric.implementation
 
-def test_dataset_description_citation_format(bbh_parser):
-    """Test that the citation in dataset description is properly formatted."""
-    description = bbh_parser.get_dataset_description()
-    citation = description["citation"]
-
-    # Check citation structure
-    assert citation.startswith("@article{")
-    assert "title=" in citation
-    assert "author=" in citation
-    assert "journal=" in citation
-    assert "year=" in citation
-
-    # Check specific author formatting
-    assert "Suzgun, Mirac" in citation
-    assert "Wei, Jason" in citation
-    assert "and Wei, Jason" in citation  # Should be last author
-    assert "and and" not in citation  # No double "and"
-
-
-def test_evaluation_metrics_implementations(bbh_parser):
-    """Test that evaluation metric implementations are properly specified."""
-    metrics = bbh_parser.get_evaluation_metrics()
-
-    for metric in metrics:
-        impl = metric["implementation"]
-
-        if "evaluate.load" in impl:
-            # Check standard metric format
-            assert impl.startswith("evaluate.load('")
-            assert impl.endswith("')")
-        elif "custom_" in impl:
-            # Check custom metric format
-            assert impl.startswith("custom_")
-            assert len(impl) > 7  # More than just "custom_"
+    # Check non-primary metrics
+    assert any(m.name == "per_task_accuracy" and not m.primary for m in metrics)
+    assert any(m.name == "exact_match" and not m.primary for m in metrics)

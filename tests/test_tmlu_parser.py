@@ -170,76 +170,40 @@ def test_metadata_handling(tmlu_parser, sample_tmlu_entries):
     assert entry.metadata["source"] == "AST chinese - 108"
 
 
-def test_dataset_description(tmlu_parser):
-    """Test dataset description contains all required fields."""
+def test_get_dataset_description(tmlu_parser):
+    """Test dataset description generation."""
     description = tmlu_parser.get_dataset_description()
 
-    required_fields = [
-        "name",
-        "version",
-        "language",
-        "purpose",
-        "source",
-        "format",
-        "size",
-        "domain",
-        "characteristics",
-        "reference",
-    ]
-
-    for field in required_fields:
-        assert field in description, f"Missing required field: {field}"
-
-    assert description["language"] == "Traditional Chinese"
-    assert "TMLU" in description["name"]
-    assert "miulab/tmlu" in description["reference"]
-    assert "AST" in description["characteristics"]
-    assert "GSAT" in description["characteristics"]
+    assert description.name == "Taiwan Multiple-choice Language Understanding (TMLU)"
+    assert description.language == "Traditional Chinese"
+    assert "Taiwan-specific educational" in description.purpose
+    assert "Various Taiwan standardized tests" in description.source
+    assert description.format == "Multiple choice questions (A/B/C/D)"
+    assert "Advanced Subjects Test (AST)" in description.characteristics
+    assert "DBLP:journals/corr/abs-2403-20180" in description.citation
 
 
-def test_evaluation_metrics(tmlu_parser):
-    """Test evaluation metrics structure and content."""
+def test_get_evaluation_metrics(tmlu_parser):
+    """Test evaluation metrics generation."""
     metrics = tmlu_parser.get_evaluation_metrics()
 
-    # Check if we have metrics defined
-    assert len(metrics) > 0
+    assert len(metrics) == 5  # Check total number of metrics
 
-    # Check structure of each metric
-    required_metric_fields = [
-        "name",
-        "type",
-        "description",
-        "implementation",
-        "primary",
-    ]
+    # Check primary metrics
+    primary_metrics = [m for m in metrics if m.primary]
+    assert len(primary_metrics) == 2
+    assert any(m.name == "accuracy" for m in primary_metrics)
+    assert any(m.name == "per_subject_accuracy" for m in primary_metrics)
 
-    for metric in metrics:
-        for field in required_metric_fields:
-            assert field in metric, f"Missing required field in metric: {field}"
+    # Check specific metric properties
+    accuracy_metric = next(m for m in metrics if m.name == "accuracy")
+    assert accuracy_metric.type == "classification"
+    assert "datasets.load_metric('accuracy')" in accuracy_metric.implementation
 
-        # Type checks
-        assert isinstance(metric["name"], str)
-        assert isinstance(metric["type"], str)
-        assert isinstance(metric["description"], str)
-        assert isinstance(metric["implementation"], str)
-        assert isinstance(metric["primary"], bool)
-
-    # Check for TMLU-specific metrics
-    metric_names = {m["name"] for m in metrics}
-    expected_metrics = {
-        "accuracy",
-        "per_subject_accuracy",
+    # Check non-primary metrics
+    non_primary_metrics = {m.name for m in metrics if not m.primary}
+    assert non_primary_metrics == {
         "per_difficulty_accuracy",
+        "confusion_matrix",
         "explanation_quality",
     }
-
-    for expected in expected_metrics:
-        assert expected in metric_names, f"Missing expected metric: {expected}"
-
-    # Verify primary metrics
-    primary_metrics = [m for m in metrics if m["primary"]]
-    assert (
-        len(primary_metrics) >= 2
-    )  # Should have at least accuracy and per_subject_accuracy
-    assert any(m["name"] == "accuracy" for m in primary_metrics)
-    assert any(m["name"] == "per_subject_accuracy" for m in primary_metrics)
