@@ -137,19 +137,19 @@ class TMLUDatasetParser(HuggingFaceDatasetParser[TMLUParseEntry]):
                 "and professional certifications"
             ),
             citation="""@article{DBLP:journals/corr/abs-2403-20180,
-                author       = {Po-Heng Chen and Sijia Cheng and Wei-Lin Chen and Yen-Ting Lin and Yun-Nung Chen},
-                title        = {Measuring Taiwanese Mandarin Language Understanding},
-                journal      = {CoRR},
-                volume       = {abs/2403.20180},
-                year         = {2024},
-                url          = {https://doi.org/10.48550/arXiv.2403.20180},
-                doi          = {10.48550/ARXIV.2403.20180},
-                eprinttype   = {arXiv},
-                eprint       = {2403.20180},
-                timestamp    = {Wed, 10 Apr 2024 17:37:45 +0200},
-                biburl       = {https://dblp.org/rec/journals/corr/abs-2403-20180.bib},
-                bibsource    = {dblp computer science bibliography, https://dblp.org}
-            }""",
+author       = {Po-Heng Chen and Sijia Cheng and Wei-Lin Chen and Yen-Ting Lin and Yun-Nung Chen},
+title        = {Measuring Taiwanese Mandarin Language Understanding},
+journal      = {CoRR},
+volume       = {abs/2403.20180},
+year         = {2024},
+url          = {https://doi.org/10.48550/arXiv.2403.20180},
+doi          = {10.48550/ARXIV.2403.20180},
+eprinttype   = {arXiv},
+eprint       = {2403.20180},
+timestamp    = {Wed, 10 Apr 2024 17:37:45 +0200},
+biburl       = {https://dblp.org/rec/journals/corr/abs-2403-20180.bib},
+bibsource    = {dblp computer science bibliography, https://dblp.org}
+}""",
         )
 
     def get_evaluation_metrics(self) -> list[EvaluationMetric]:
