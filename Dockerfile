@@ -12,9 +12,11 @@ ENV PYTHONUNBUFFERED=1 \
 # Set working directory
 WORKDIR /app
 
-# Create cache directories for Hugging Face
-ENV HF_HOME=/home/app/.cache/huggingface
-RUN mkdir -p /home/app/.cache/huggingface
+# Create cache directories for Hugging Face and set permissions correctly
+ENV HF_HOME=/app/.cache/huggingface
+RUN mkdir -p /app/.cache/huggingface && \
+    mkdir -p /app/.cache/torch && \
+    mkdir -p /app/.cache/transformers
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -22,6 +24,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     gcc \
     git \
+    curl \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -35,8 +38,13 @@ COPY pyproject.toml poetry.lock ./
 # Install dependencies using the lock file
 RUN poetry install --no-dev --no-interaction --no-ansi
 
-# Create app user and group
-RUN groupadd -r app && useradd -r -g app app
+# Create app user and group with specific UID/GID
+RUN groupadd -r app --gid 1000 && \
+    useradd -r -g app --uid 1000 --create-home app
+
+# Set ownership of all cache directories
+RUN chown -R app:app /app/.cache && \
+    chmod -R 755 /app/.cache
 
 # Before switching to non-root user, create and set permissions
 RUN mkdir -p /home/app/.cache && \
