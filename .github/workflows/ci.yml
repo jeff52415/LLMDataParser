@@ -22,8 +22,15 @@ jobs:
         run: |
           pipx install poetry
 
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+
       - name: Install dependencies
-        run: poetry install
+        run: |
+          poetry lock --no-update
+          poetry install
 
       - name: Run pre-commit hooks
         uses: pre-commit/action@v3.0.0
