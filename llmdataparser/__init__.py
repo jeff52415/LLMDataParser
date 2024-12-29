@@ -10,7 +10,7 @@ from .math_parser import MATHDatasetParser
 from .mbpp_parser import MBPPDatasetParser
 from .mgsm_parser import MGSMDatasetParser
 from .mmlu_parser import (
-    MMLUDatasetParser,
+    BaseMMLUDatasetParser,
     MMLUProDatasetParser,
     MMLUReduxDatasetParser,
     TMMLUPlusDatasetParser,
@@ -44,7 +44,7 @@ class ParserRegistry:
 
 
 # Register parsers
-ParserRegistry.register_parser("mmlu", MMLUDatasetParser)
+ParserRegistry.register_parser("mmlu", BaseMMLUDatasetParser)
 ParserRegistry.register_parser("mmlupro", MMLUProDatasetParser)
 ParserRegistry.register_parser("mmluredux", MMLUReduxDatasetParser)
 ParserRegistry.register_parser("tmmluplus", TMMLUPlusDatasetParser)

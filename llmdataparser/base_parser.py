@@ -119,20 +119,13 @@ class DatasetParser(Generic[T], ABC):
             T: The processed entry, typically an instance of a subclass of ParseEntry.
         """
 
+    @abstractmethod
     def get_dataset_description(self) -> DatasetDescription:
         """Returns a standardized description of the dataset."""
-        return DatasetDescription(
-            name="Unknown",
-            purpose="Not specified",
-            source="Not specified",
-            language="Not specified",
-            format="Not specified",
-            characteristics="Not specified",
-        )
 
+    @abstractmethod
     def get_evaluation_metrics(self) -> list[EvaluationMetric]:
         """Returns the recommended evaluation metrics for the dataset."""
-        return []
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
