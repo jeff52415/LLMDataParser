@@ -171,3 +171,35 @@ def test_plus_get_current_task(plus_parser, plus_sample_entry):
     """Test _get_current_task method for HumanEvalDatasetPlusParser"""
     task = plus_parser._get_current_task(plus_sample_entry)
     assert task == plus_parser._default_task
+
+
+def test_get_dataset_description(parser, plus_parser):
+    """Test dataset description generation for both parsers."""
+    # Test original HumanEval description
+    description = parser.get_dataset_description()
+    assert description.name == "HumanEval"
+    assert "code generation" in description.purpose
+    assert description.language == "Python"
+    assert "Function signatures with docstrings" in description.format
+    assert "164 hand-written Python programming problems" in description.characteristics
+    assert "chen2021codex" in description.citation
+
+    # Test HumanEval Plus description
+    plus_description = plus_parser.get_dataset_description()
+    assert plus_description.name == "HumanEval Plus"
+    assert "80x more test coverage" in plus_description.purpose
+    assert "comprehensive test suites" in plus_description.format
+    assert "edge cases" in plus_description.characteristics
+    assert "evalplus" in plus_description.citation
+
+
+def test_get_evaluation_metrics(parser, plus_parser):
+    """Test evaluation metrics generation for both parsers."""
+    # Test original HumanEval metrics
+    metrics = parser.get_evaluation_metrics()
+    assert len(metrics) == 5  # Base metrics + 2 specific metrics
+
+    # Check primary metrics - update to match actual implementation
+    primary_metrics = [m for m in metrics if m.primary]
+    assert len(primary_metrics) == 1  # pass@k
+    assert any(m.name == "pass@k" for m in primary_metrics)
