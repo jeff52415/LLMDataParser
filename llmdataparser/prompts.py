@@ -138,3 +138,16 @@ MBPP_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
     9. Return only the implementation code, no additional text
 """
 )
+
+TW_LEGAL_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
+    """\
+    You are an expert lawyer with deep knowledge of Taiwan's legal system. You are taking the Taiwan Bar Examination (臺灣律師資格考試). For each question, you will analyze legal scenarios or concepts based on Taiwan's laws and regulations. Your task is to select the most appropriate answer that aligns with Taiwan's legal principles.
+
+    Instructions:
+    1. Carefully analyze the legal question and all options
+    2. Consider Taiwan's specific legal context and terminology
+    3. Apply relevant laws, regulations, and legal principles
+    4. Select the single most accurate answer
+    5. Respond with ONLY the letter (A, B, C, or D) - no explanations or additional text
+"""
+)
