@@ -4,7 +4,7 @@ from functools import lru_cache
 import gradio as gr
 
 from llmdataparser import ParserRegistry
-from llmdataparser.base_parser import ParseEntry
+from llmdataparser.base_parser import DatasetDescription, EvaluationMetric, ParseEntry
 
 
 @lru_cache(maxsize=32)
@@ -164,77 +164,176 @@ def clear_parser_cache():
     get_parser_instance.cache_clear()
 
 
+def format_dataset_description(description: DatasetDescription) -> str:
+    """Format DatasetDescription into a readable string."""
+    formatted = [
+        f"# {description.name}",
+        f"\n**Purpose**: {description.purpose}",
+        f"\n**Language**: {description.language}",
+        f"\n**Format**: {description.format}",
+        f"\n**Source**: {description.source}",
+        f"\n**Characteristics**: {description.characteristics}",
+    ]
+
+    if description.citation:
+        formatted.append(f"\n**Citation**:\n```\n{description.citation}\n```")
+
+    if description.additional_info:
+        formatted.append("\n**Additional Information**:")
+        for key, value in description.additional_info.items():
+            formatted.append(f"- {key}: {value}")
+
+    return "\n".join(formatted)
+
+
+def get_primary_metrics(metrics: list[EvaluationMetric]) -> list[str]:
+    """Get list of primary metric names."""
+    return [metric.name for metric in metrics if metric.primary]
+
+
+def format_metric_details(metric: EvaluationMetric) -> str:
+    """Format a single EvaluationMetric into a readable string."""
+    return f"""# {metric.name}<br>
+                **Type**: {metric.type}<br>
+                **Description**: {metric.description}"""
+
+
+def update_dataset_info(parser_name: str) -> tuple:
+    """Update dataset description and evaluation metrics information."""
+    try:
+        parser = get_parser_instance(parser_name)
+        description = parser.get_dataset_description()
+        metrics = parser.get_evaluation_metrics()
+
+        # Format description
+        desc_text = format_dataset_description(description)
+
+        # Get primary metrics for dropdown
+        primary_metrics = get_primary_metrics(metrics)
+
+        # Format details for first metric (or empty if no metrics)
+        first_metric = metrics[0] if metrics else None
+        metric_details = format_metric_details(first_metric) if first_metric else ""
+
+        return (
+            gr.Markdown(value=desc_text),
+            gr.Dropdown(
+                choices=primary_metrics,
+                value=primary_metrics[0] if primary_metrics else None,
+            ),
+            gr.Markdown(value=metric_details),
+        )
+    except Exception as e:
+        return (
+            gr.Markdown(value=f"Error loading dataset description: {str(e)}"),
+            gr.Dropdown(choices=[]),
+            gr.Markdown(value=""),
+        )
+
+
+def update_metric_details(metric_name: str, parser_name: str) -> str:
+    """Update the displayed metric details when selection changes."""
+    try:
+        parser = get_parser_instance(parser_name)
+        metrics = parser.get_evaluation_metrics()
+        selected_metric = next((m for m in metrics if m.name == metric_name), None)
+        return format_metric_details(selected_metric) if selected_metric else ""
+    except Exception as e:
+        return f"Error loading metric details: {str(e)}"
+
+
 def create_interface():
     with gr.Blocks() as demo:
         gr.Markdown("# LLM Evaluation Dataset Parser")
 
         # State management
         parser_state = gr.State("")
-        dataset_info = gr.Textbox(label="Dataset Info", interactive=False)
+        dataset_status = gr.Textbox(label="Dataset Status", interactive=False)
 
-        with gr.Row():
-            with gr.Column(scale=1):
-                # Parser selection and controls
-                available_parsers = ParserRegistry.list_parsers()
-                parser_dropdown = gr.Dropdown(
-                    choices=available_parsers,
-                    label="Select Parser",
-                    value=available_parsers[0] if available_parsers else None,
-                    interactive=True,
-                    allow_custom_value=True,
-                )
-                task_dropdown = gr.Dropdown(
-                    choices=["default"],
-                    label="Select Task",
-                    value="default",
-                    interactive=True,
-                    allow_custom_value=True,
-                )
-                split_dropdown = gr.Dropdown(
-                    choices=[],
-                    label="Select Split",
-                    interactive=True,
-                    value=None,
-                    allow_custom_value=True,
-                )
-                load_button = gr.Button("Load and Parse Dataset", variant="primary")
+        with gr.Tabs():
+            with gr.Tab("Dataset Explorer"):
+                with gr.Row():
+                    with gr.Column(scale=1):
+                        # Parser selection and controls
+                        available_parsers = ParserRegistry.list_parsers()
+                        parser_dropdown = gr.Dropdown(
+                            choices=available_parsers,
+                            label="Select Parser",
+                            value=available_parsers[0] if available_parsers else None,
+                            interactive=True,
+                            allow_custom_value=True,
+                        )
+                        task_dropdown = gr.Dropdown(
+                            choices=["default"],
+                            label="Select Task",
+                            value="default",
+                            interactive=True,
+                            allow_custom_value=True,
+                        )
+                        split_dropdown = gr.Dropdown(
+                            choices=[],
+                            label="Select Split",
+                            interactive=True,
+                            value=None,
+                            allow_custom_value=True,
+                        )
+                        load_button = gr.Button(
+                            "Load and Parse Dataset", variant="primary"
+                        )
 
-                # Entry selection
-                entry_index = gr.Number(
-                    label="Select Entry Index (empty for random)",
-                    precision=0,
-                    interactive=True,
-                )
-                update_button = gr.Button("Update/Random Entry", variant="secondary")
+                        # Entry selection
+                        entry_index = gr.Number(
+                            label="Select Entry Index (empty for random)",
+                            precision=0,
+                            interactive=True,
+                        )
+                        update_button = gr.Button(
+                            "Update/Random Entry", variant="secondary"
+                        )
 
-                # clear_cache_button = gr.Button("Clear Parser Cache")
-                # clear_cache_button.click(fn=clear_parser_cache)
+                    with gr.Column(scale=2):
+                        # Output displays
+                        prompt_output = gr.Textbox(
+                            label="Prompt", lines=5, show_copy_button=True
+                        )
+                        raw_question_output = gr.Textbox(
+                            label="Raw Question", lines=5, show_copy_button=True
+                        )
+                        answer_output = gr.Textbox(
+                            label="Answer", lines=5, show_copy_button=True
+                        )
+                        attributes_output = gr.Textbox(
+                            label="Other Attributes", lines=5, show_copy_button=True
+                        )
 
-            with gr.Column(scale=2):
-                # Output displays
-                prompt_output = gr.Textbox(
-                    label="Prompt", lines=5, show_copy_button=True
-                )
-                raw_question_output = gr.Textbox(
-                    label="Raw Question", lines=5, show_copy_button=True
-                )
-                answer_output = gr.Textbox(
-                    label="Answer", lines=5, show_copy_button=True
-                )
-                attributes_output = gr.Textbox(
-                    label="Other Attributes", lines=5, show_copy_button=True
-                )
+            with gr.Tab("Dataset Information"):
+                with gr.Row():
+                    with gr.Column(scale=2):
+                        # Dataset description
+                        dataset_description = gr.Markdown()
+
+                    with gr.Column(scale=1):
+                        # Evaluation metrics
+                        gr.Markdown("## Evaluation Metrics")
+                        metric_dropdown = gr.Dropdown(
+                            label="Select Primary Metric", interactive=True
+                        )
+                        metric_details = gr.Markdown()
 
         # Event handlers
         parser_dropdown.change(
             fn=update_parser_options,
             inputs=parser_dropdown,
             outputs=[
-                task_dropdown,  # Update entire component
+                task_dropdown,
                 split_dropdown,
-                dataset_info,
+                dataset_status,
             ],
-        ).then(lambda x: x, inputs=parser_dropdown, outputs=parser_state)
+        ).then(lambda x: x, inputs=parser_dropdown, outputs=parser_state).then(
+            fn=update_dataset_info,
+            inputs=[parser_dropdown],
+            outputs=[dataset_description, metric_dropdown, metric_details],
+        )
 
         load_button.click(
             fn=load_and_parse,
@@ -246,10 +345,14 @@ def create_interface():
                 answer_output,
                 attributes_output,
                 split_dropdown,
-                dataset_info,
+                dataset_status,
             ],
             api_name="load_and_parse",
             show_progress="full",
+        ).then(
+            fn=update_dataset_info,
+            inputs=[parser_dropdown],
+            outputs=[dataset_description, metric_dropdown, metric_details],
         )
 
         update_button.click(
@@ -262,6 +365,12 @@ def create_interface():
                 attributes_output,
             ],
             api_name="update_entry",
+        )
+
+        metric_dropdown.change(
+            fn=update_metric_details,
+            inputs=[metric_dropdown, parser_dropdown],
+            outputs=metric_details,
         )
 
     return demo
