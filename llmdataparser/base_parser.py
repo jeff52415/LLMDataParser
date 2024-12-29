@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, ClassVar, Generic, List, TypeVar
 
 import datasets
 
@@ -17,6 +17,66 @@ class ParseEntry:
     answer: str
     raw_question: str
     raw_answer: str
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class DatasetDescription:
+    """Standardized description of a dataset."""
+
+    name: str
+    purpose: str
+    source: str
+    language: str
+    format: str
+    characteristics: str
+    citation: str | None = None
+    additional_info: dict[str, Any] | None = None
+
+    @classmethod
+    def create(
+        cls,
+        name: str,
+        purpose: str,
+        source: str,
+        language: str,
+        format: str,
+        characteristics: str,
+        citation: str | None = None,
+        additional_info: dict[str, Any] | None = None,
+    ) -> "DatasetDescription":
+        return cls(
+            name=name,
+            purpose=purpose,
+            source=source,
+            language=language,
+            format=format,
+            characteristics=characteristics,
+            citation=citation,
+            additional_info=additional_info,
+        )
+
+
+@dataclass(frozen=True, kw_only=True, slots=True)
+class EvaluationMetric:
+    """Description of an evaluation metric for a dataset."""
+
+    name: str
+    type: str
+    description: str
+    implementation: str
+    primary: bool
+
+    @classmethod
+    def create(
+        cls, name: str, type: str, description: str, implementation: str, primary: bool
+    ) -> "EvaluationMetric":
+        return cls(
+            name=name,
+            type=type,
+            description=description,
+            implementation=implementation,
+            primary=primary,
+        )
 
 
 class DatasetParser(Generic[T], ABC):
@@ -58,6 +118,21 @@ class DatasetParser(Generic[T], ABC):
         Returns:
             T: The processed entry, typically an instance of a subclass of ParseEntry.
         """
+
+    def get_dataset_description(self) -> DatasetDescription:
+        """Returns a standardized description of the dataset."""
+        return DatasetDescription(
+            name="Unknown",
+            purpose="Not specified",
+            source="Not specified",
+            language="Not specified",
+            format="Not specified",
+            characteristics="Not specified",
+        )
+
+    def get_evaluation_metrics(self) -> List[EvaluationMetric]:
+        """Returns the recommended evaluation metrics for the dataset."""
+        return []
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)

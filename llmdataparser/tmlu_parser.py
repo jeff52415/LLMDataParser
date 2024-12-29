@@ -1,7 +1,12 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Final, List
+from typing import Any, Final
 
-from llmdataparser.base_parser import HuggingFaceDatasetParser, HuggingFaceParseEntry
+from llmdataparser.base_parser import (
+    DatasetDescription,
+    EvaluationMetric,
+    HuggingFaceDatasetParser,
+    HuggingFaceParseEntry,
+)
 from llmdataparser.prompts import TMLU_SYSTEM_PROMPT
 
 TMLU_VALID_ANSWERS: Final[set[str]] = {"A", "B", "C", "D"}
@@ -118,63 +123,73 @@ class TMLUDatasetParser(HuggingFaceDatasetParser[TMLUParseEntry]):
             metadata=metadata,
         )
 
-    def get_dataset_description(self) -> Dict[str, str]:
+    def get_dataset_description(self) -> DatasetDescription:
         """Returns description of the TMLU dataset."""
-        return {
-            "name": "Taiwan Multiple-choice Language Understanding (TMLU)",
-            "version": "1.0",
-            "language": "Traditional Chinese",
-            "purpose": "Evaluate models on Taiwan-specific educational and professional knowledge",
-            "source": "Various Taiwan standardized tests and professional certifications",
-            "format": "Multiple choice questions (A/B/C/D)",
-            "size": "Multiple subjects across different test types",
-            "domain": "Education and Professional Certification",
-            "characteristics": (
+        return DatasetDescription.create(
+            name="Taiwan Multiple-choice Language Understanding (TMLU)",
+            language="Traditional Chinese",
+            purpose="Evaluate models on Taiwan-specific educational and professional knowledge",
+            source="Various Taiwan standardized tests and professional certifications",
+            format="Multiple choice questions (A/B/C/D)",
+            characteristics=(
                 "Covers various subjects including Advanced Subjects Test (AST), "
                 "General Scholastic Ability Test (GSAT), College Admission Practice (CAP), "
                 "and professional certifications"
             ),
-            "reference": "https://huggingface.co/datasets/miulab/tmlu",
-        }
+            citation="""@article{DBLP:journals/corr/abs-2403-20180,
+                author       = {Po-Heng Chen and Sijia Cheng and Wei-Lin Chen and Yen-Ting Lin and Yun-Nung Chen},
+                title        = {Measuring Taiwanese Mandarin Language Understanding},
+                journal      = {CoRR},
+                volume       = {abs/2403.20180},
+                year         = {2024},
+                url          = {https://doi.org/10.48550/arXiv.2403.20180},
+                doi          = {10.48550/ARXIV.2403.20180},
+                eprinttype   = {arXiv},
+                eprint       = {2403.20180},
+                timestamp    = {Wed, 10 Apr 2024 17:37:45 +0200},
+                biburl       = {https://dblp.org/rec/journals/corr/abs-2403-20180.bib},
+                bibsource    = {dblp computer science bibliography, https://dblp.org}
+            }""",
+        )
 
-    def get_evaluation_metrics(self) -> List[Dict[str, Any]]:
+    def get_evaluation_metrics(self) -> list[EvaluationMetric]:
         """Returns recommended evaluation metrics for TMLU."""
         return [
-            {
-                "name": "accuracy",
-                "type": "classification",
-                "description": "Overall percentage of correctly answered questions",
-                "implementation": "datasets.load_metric('accuracy')",
-                "primary": True,
-            },
-            {
-                "name": "per_subject_accuracy",
-                "type": "classification",
-                "description": "Accuracy broken down by subject areas (AST, GSAT, CAP, etc.)",
-                "implementation": "custom_subject_accuracy",
-                "primary": True,
-            },
-            {
-                "name": "per_difficulty_accuracy",
-                "type": "classification",
-                "description": "Accuracy broken down by test difficulty levels",
-                "implementation": "custom_difficulty_accuracy",
-                "primary": False,
-            },
-            {
-                "name": "confusion_matrix",
-                "type": "classification",
-                "description": "Distribution of predicted vs actual answers",
-                "implementation": "datasets.load_metric('confusion_matrix')",
-                "primary": False,
-            },
-            {
-                "name": "explanation_quality",
-                "type": "text",
-                "description": "Quality assessment of model explanations when available",
-                "implementation": "custom_explanation_metric",
-                "primary": False,
-            },
+            EvaluationMetric.create(
+                name="accuracy",
+                type="classification",
+                description="Overall percentage of correctly answered questions",
+                implementation="datasets.load_metric('accuracy')",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="per_subject_accuracy",
+                type="classification",
+                description="Accuracy broken down by subject areas (AST, GSAT, CAP, etc.)",
+                implementation="custom_subject_accuracy",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="per_difficulty_accuracy",
+                type="classification",
+                description="Accuracy broken down by test difficulty levels",
+                implementation="custom_difficulty_accuracy",
+                primary=False,
+            ),
+            EvaluationMetric.create(
+                name="confusion_matrix",
+                type="classification",
+                description="Distribution of predicted vs actual answers",
+                implementation="datasets.load_metric('confusion_matrix')",
+                primary=False,
+            ),
+            EvaluationMetric.create(
+                name="explanation_quality",
+                type="text",
+                description="Quality assessment of model explanations when available",
+                implementation="custom_explanation_metric",
+                primary=False,
+            ),
         ]
 
 
