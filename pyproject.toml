@@ -69,7 +69,9 @@ warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 check_untyped_defs = true
-exclude = ['tests/.*']
+exclude = ['tests/*']
+ignore_missing_imports = true
+follow_imports = "silent"
 
 
 [tool.pytest.ini_options]
