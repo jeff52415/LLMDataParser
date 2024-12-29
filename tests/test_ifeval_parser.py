@@ -89,3 +89,54 @@ def test_parser_string_representation(ifeval_parser):
     assert "IFEvalDatasetParser" in repr_str
     assert "google/IFEval" in repr_str
     assert "not loaded" in repr_str
+
+
+def test_get_dataset_description(ifeval_parser):
+    """Test dataset description generation for IFEval."""
+    description = ifeval_parser.get_dataset_description()
+
+    assert description.name == "IFEval"
+    assert "verifiable instructions" in description.purpose.lower()
+    assert description.source == "Google Research"
+    assert description.language == "English (BCP-47 en)"
+    assert "verifiable instruction prompts" in description.format.lower()
+    assert "500" in description.characteristics
+    assert "automated heuristics" in description.characteristics.lower()
+    assert "open llm leaderboard" in description.characteristics.lower()
+    assert "zhou2023instructionfollowingevaluation" in description.citation
+
+
+def test_get_evaluation_metrics(ifeval_parser):
+    """Test evaluation metrics generation for IFEval."""
+    metrics = ifeval_parser.get_evaluation_metrics()
+
+    # Should have 5 metrics total
+    assert len(metrics) == 5
+
+    # Check primary metrics
+    primary_metrics = [m for m in metrics if m.primary]
+    assert len(primary_metrics) == 3
+
+    # Verify specific metrics exist and have correct properties
+    metric_names = {m.name for m in metrics}
+    assert "format_compliance" in metric_names
+    assert "length_constraints" in metric_names
+    assert "punctuation_rules" in metric_names
+    assert "keyword_usage" in metric_names
+    assert "structural_requirements" in metric_names
+
+    # Check specific metric properties
+    format_metric = next(m for m in metrics if m.name == "format_compliance")
+    assert format_metric.primary is True
+    assert "formatting rules" in format_metric.description.lower()
+    assert format_metric.type == "text"
+
+    length_metric = next(m for m in metrics if m.name == "length_constraints")
+    assert length_metric.primary is True
+    assert "word" in length_metric.description.lower()
+    assert length_metric.type == "text"
+
+    punctuation_metric = next(m for m in metrics if m.name == "punctuation_rules")
+    assert punctuation_metric.primary is True
+    assert "punctuation" in punctuation_metric.description.lower()
+    assert punctuation_metric.type == "text"
