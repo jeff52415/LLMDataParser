@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from typing import Any, ClassVar
 
-from llmdataparser.base_parser import HuggingFaceDatasetParser, HuggingFaceParseEntry
+from llmdataparser.base_parser import (
+    DatasetDescription,
+    EvaluationMetric,
+    HuggingFaceDatasetParser,
+    HuggingFaceParseEntry,
+)
 from llmdataparser.prompts import MBPP_SYSTEM_PROMPT
 
 
@@ -82,6 +87,70 @@ class MBPPDatasetParser(HuggingFaceDatasetParser[MBPPParseEntry]):
             task_name=task,
             source_file=source_file,
         )
+
+    def get_dataset_description(self) -> DatasetDescription:
+        """Returns a description of the MBPP dataset."""
+        return DatasetDescription.create(
+            name="Mostly Basic Python Problems (MBPP)",
+            purpose="A benchmark for evaluating code generation capabilities using entry-level Python programming problems",
+            source="https://github.com/google-research/google-research/tree/master/mbpp",
+            language="English and Python",
+            format="Task descriptions in English with corresponding Python solutions and automated test cases",
+            characteristics=(
+                "Contains approximately 1,000 crowd-sourced Python programming problems "
+                "designed for entry-level programmers. Problems cover programming fundamentals "
+                "and standard library functionality. Each problem includes a task description, "
+                "code solution, and 3 automated test cases. A subset of the data has been "
+                "hand-verified by the authors."
+            ),
+            citation=(
+                "@article{austin2021program,\n"
+                "  title={Program Synthesis with Large Language Models},\n"
+                "  author={Austin, Jacob and Odena, Augustus and Nye, Maxwell and Bosma, Maarten and Michalewski, Henryk and Dohan, David and Jiang, Ellen and Cai, Carrie and Terry, Michael and Le, Quoc and others},\n"
+                "  journal={arXiv preprint arXiv:2108.07732},\n"
+                "  year={2021}\n"
+                "}"
+            ),
+            additional_info={
+                "size": "~1,000 programming problems",
+                "splits": "Available in full or sanitized versions",
+                "test_coverage": "Each problem includes 3 automated test cases",
+                "verification": "Subset of data has been hand-verified by authors",
+            },
+        )
+
+    def get_evaluation_metrics(self) -> list[EvaluationMetric]:
+        """Returns the recommended evaluation metrics for MBPP dataset."""
+        return [
+            EvaluationMetric.create(
+                name="pass@k",
+                type="code_evaluation",
+                description="Percentage of problems where at least one solution in k generations passes all test cases",
+                implementation="custom_pass_at_k",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="test_case_success_rate",
+                type="code_evaluation",
+                description="Percentage of test cases passed across all problems",
+                implementation="custom_test_success_rate",
+                primary=False,
+            ),
+            EvaluationMetric.create(
+                name="syntax_validity",
+                type="code_evaluation",
+                description="Verifies that generated code is syntactically valid Python",
+                implementation="custom_syntax_check",
+                primary=False,
+            ),
+            EvaluationMetric.create(
+                name="code_similarity",
+                type="similarity",
+                description="Similarity between generated code and reference solution",
+                implementation="evaluate.load('code_eval')",
+                primary=False,
+            ),
+        ]
 
 
 if __name__ == "__main__":

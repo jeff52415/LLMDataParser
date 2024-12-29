@@ -152,3 +152,74 @@ def test_custom_system_prompt():
 def test_default_system_prompt(parser):
     """Test parser uses default system prompt when none provided"""
     assert parser._system_prompt == parser._default_system_prompt
+
+
+def test_get_dataset_description(parser):
+    """Test dataset description generation."""
+    description = parser.get_dataset_description()
+
+    assert description.name == "Mostly Basic Python Problems (MBPP)"
+    assert "code generation" in description.purpose.lower()
+    assert "google-research" in description.source
+    assert description.language == "English and Python"
+    assert "task descriptions" in description.format.lower()
+    assert "python solutions" in description.format.lower()
+    assert "1,000" in description.characteristics
+    assert "entry-level programmers" in description.characteristics.lower()
+    assert "3 automated test cases" in description.characteristics
+    assert "hand-verified" in description.characteristics
+    assert "austin2021program" in description.citation
+    assert "Program Synthesis" in description.citation
+
+    # Check additional info
+    assert description.additional_info is not None
+    assert description.additional_info["size"] == "~1,000 programming problems"
+    assert (
+        description.additional_info["splits"]
+        == "Available in full or sanitized versions"
+    )
+    assert (
+        description.additional_info["test_coverage"]
+        == "Each problem includes 3 automated test cases"
+    )
+    assert (
+        description.additional_info["verification"]
+        == "Subset of data has been hand-verified by authors"
+    )
+
+
+def test_get_evaluation_metrics(parser):
+    """Test evaluation metrics generation."""
+    metrics = parser.get_evaluation_metrics()
+
+    # Check total number of metrics
+    assert len(metrics) == 4
+
+    # Check primary metrics
+    primary_metrics = [m for m in metrics if m.primary]
+    assert len(primary_metrics) == 1
+
+    # Verify specific metrics exist with correct properties
+    metric_names = {m.name for m in metrics}
+    assert "pass@k" in metric_names
+    assert "test_case_success_rate" in metric_names
+    assert "syntax_validity" in metric_names
+
+    # Check specific metric properties
+    pass_k_metric = next(m for m in metrics if m.name == "pass@k")
+    assert pass_k_metric.type == "code_evaluation"
+    assert pass_k_metric.primary is True
+    assert "k generations" in pass_k_metric.description.lower()
+    assert "custom_pass_at_k" in pass_k_metric.implementation
+
+    test_case_metric = next(m for m in metrics if m.name == "test_case_success_rate")
+    assert test_case_metric.type == "code_evaluation"
+    assert test_case_metric.primary is False
+    assert "test cases" in test_case_metric.description.lower()
+    assert "custom_test_success_rate" in test_case_metric.implementation
+
+    syntax_metric = next(m for m in metrics if m.name == "syntax_validity")
+    assert syntax_metric.type == "code_evaluation"
+    assert syntax_metric.primary is False
+    assert "syntactically valid" in syntax_metric.description.lower()
+    assert "custom_syntax_check" in syntax_metric.implementation
