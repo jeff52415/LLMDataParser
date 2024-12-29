@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from typing import Any, Final
 
-from llmdataparser.base_parser import HuggingFaceDatasetParser, HuggingFaceParseEntry
+from llmdataparser.base_parser import (
+    DatasetDescription,
+    EvaluationMetric,
+    HuggingFaceDatasetParser,
+    HuggingFaceParseEntry,
+)
 from llmdataparser.prompts import TW_LEGAL_SYSTEM_PROMPT
 
 TW_LEGAL_VALID_ANSWERS: Final[set[str]] = {"A", "B", "C", "D"}
@@ -69,6 +74,35 @@ class TWLegalDatasetParser(HuggingFaceDatasetParser[TWLegalParseEntry]):
             raw_answer=raw_answer,
             task_name=task,
         )
+
+    def get_dataset_description(self) -> DatasetDescription:
+        """Returns description of the Taiwan Legal Benchmark dataset."""
+        return DatasetDescription.create(
+            name="Taiwan Legal Benchmark",
+            language="Traditional Chinese",
+            purpose="Evaluate models on Taiwan-specific legal knowledge and understanding",
+            source="Taiwan Bar Examination questions",
+            format="Multiple choice questions (A/B/C/D)",
+            characteristics=(
+                "Contains questions from Taiwan's bar examination, testing understanding "
+                "of Taiwan's legal system, terminology, and concepts"
+            ),
+            citation="""
+                url={https://huggingface.co/datasets/lianghsun/tw-legal-benchmark-v1}
+            }""",
+        )
+
+    def get_evaluation_metrics(self) -> list[EvaluationMetric]:
+        """Returns recommended evaluation metrics for Taiwan Legal Benchmark."""
+        return [
+            EvaluationMetric.create(
+                name="accuracy",
+                type="classification",
+                description="Overall percentage of correctly answered legal questions",
+                implementation="datasets.load_metric('accuracy')",
+                primary=True,
+            ),
+        ]
 
 
 if __name__ == "__main__":

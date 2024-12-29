@@ -138,3 +138,27 @@ def test_system_prompt_override(tw_legal_parser):
 
     entry = parser.process_entry(test_entry)
     assert custom_prompt in entry.prompt
+
+
+def test_get_dataset_description(tw_legal_parser):
+    """Test getting dataset description for Taiwan Legal parser."""
+    description = tw_legal_parser.get_dataset_description()
+
+    assert description.name == "Taiwan Legal Benchmark"
+    assert description.language == "Traditional Chinese"
+    assert "Taiwan's legal system" in description.characteristics
+    assert (
+        "huggingface.co/datasets/lianghsun/tw-legal-benchmark-v1"
+        in description.citation
+    )
+
+
+def test_get_evaluation_metrics(tw_legal_parser):
+    """Test getting evaluation metrics for Taiwan Legal parser."""
+    metrics = tw_legal_parser.get_evaluation_metrics()
+
+    assert len(metrics) == 1
+    metric = metrics[0]
+    assert metric.name == "accuracy"
+    assert metric.type == "classification"
+    assert metric.primary is True

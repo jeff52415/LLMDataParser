@@ -169,27 +169,6 @@ class TMLUDatasetParser(HuggingFaceDatasetParser[TMLUParseEntry]):
                 implementation="custom_subject_accuracy",
                 primary=True,
             ),
-            EvaluationMetric.create(
-                name="per_difficulty_accuracy",
-                type="classification",
-                description="Accuracy broken down by test difficulty levels",
-                implementation="custom_difficulty_accuracy",
-                primary=False,
-            ),
-            EvaluationMetric.create(
-                name="confusion_matrix",
-                type="classification",
-                description="Distribution of predicted vs actual answers",
-                implementation="datasets.load_metric('confusion_matrix')",
-                primary=False,
-            ),
-            EvaluationMetric.create(
-                name="explanation_quality",
-                type="text",
-                description="Quality assessment of model explanations when available",
-                implementation="custom_explanation_metric",
-                primary=False,
-            ),
         ]
 
 

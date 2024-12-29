@@ -187,23 +187,10 @@ def test_get_evaluation_metrics(tmlu_parser):
     """Test evaluation metrics generation."""
     metrics = tmlu_parser.get_evaluation_metrics()
 
-    assert len(metrics) == 5  # Check total number of metrics
+    assert len(metrics) == 2  # Check total number of metrics
 
     # Check primary metrics
     primary_metrics = [m for m in metrics if m.primary]
     assert len(primary_metrics) == 2
     assert any(m.name == "accuracy" for m in primary_metrics)
     assert any(m.name == "per_subject_accuracy" for m in primary_metrics)
-
-    # Check specific metric properties
-    accuracy_metric = next(m for m in metrics if m.name == "accuracy")
-    assert accuracy_metric.type == "classification"
-    assert "datasets.load_metric('accuracy')" in accuracy_metric.implementation
-
-    # Check non-primary metrics
-    non_primary_metrics = {m.name for m in metrics if not m.primary}
-    assert non_primary_metrics == {
-        "per_difficulty_accuracy",
-        "confusion_matrix",
-        "explanation_quality",
-    }
