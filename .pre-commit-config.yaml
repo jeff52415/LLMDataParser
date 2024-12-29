@@ -7,12 +7,6 @@ repos:
       - id: ruff
         args: [--fix]
       - id: ruff-format
-  - repo: https://github.com/PyCQA/flake8
-    rev: 6.1.0
-    hooks:
-      - id: flake8
-        additional_dependencies: ["typing-extensions>=4.8.0"]
-        args: ["--ignore=E203, E501, W503, E501"]
   - repo: https://github.com/PyCQA/isort
     rev: 5.12.0
     hooks:
@@ -23,7 +17,12 @@ repos:
     hooks:
       - id: mypy
         args:
-          ["--install-types", "--non-interactive", "--ignore-missing-imports"]
+          [
+            "--config-file=pyproject.toml",
+            "--install-types",
+            "--non-interactive",
+            "--ignore-missing-imports",
+          ]
         additional_dependencies:
           - "typing-extensions>=4.8.0"
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -97,4 +96,4 @@ repos:
     hooks:
       - id: bandit
         args: ["-c", "pyproject.toml"]
-        additional_dependencies: ["bandit[toml]"]
+        additional_dependencies: ["bandit[toml]", ".[toml]"]
