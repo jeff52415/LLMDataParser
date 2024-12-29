@@ -99,7 +99,7 @@ class MMLUDatasetParser(HuggingFaceDatasetParser[MMLUParseEntry]):
 
     def _get_task_from_entry(self, data_entry: dict[str, Any]) -> str:
         """Get the task name from the data entry or default task name."""
-        task_name = data_entry.get("subject")
+        task_name: str = data_entry.get("subject", "")
         return task_name if task_name else (self._current_task or self._default_task)
 
     def process_entry(
@@ -574,7 +574,7 @@ class MMLUProDatasetParser(HuggingFaceDatasetParser[MMLUProParseEntry]):
     def _get_task_from_entry(self, data_entry: dict[str, Any]) -> str:
         """Get the task name from the data entry or default task name."""
         if data_entry is not None:
-            task_name = data_entry.get("category")
+            task_name: str = data_entry.get("category", "")
             if task_name:
                 return task_name
         return self._current_task or self._default_task

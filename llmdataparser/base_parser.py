@@ -84,7 +84,7 @@ class DatasetParser(Generic[T], ABC):
     Abstract base class defining the interface for all dataset parsers.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._parsed_data: list[T] = []
 
     @abstractmethod
@@ -151,7 +151,7 @@ class HuggingFaceDatasetParser(DatasetParser[T]):
     # _hidden_task_names is the list of task names that are hidden in the dataset, e.g. ["math", "physics", "chemistry"]
     _hidden_task_names: ClassVar[list[str]] = []
 
-    def __init__(self, system_prompt: str | None = None, **kwargs):
+    def __init__(self, system_prompt: str | None = None, **kwargs: Any) -> None:
         """
         Initialize a HuggingFaceDatasetParser.
 
@@ -183,7 +183,9 @@ class HuggingFaceDatasetParser(DatasetParser[T]):
         # If data_entry is provided and contains task information, use it
         if data_entry is not None and hasattr(self, "_get_task_from_entry"):
             try:
-                return self._get_task_from_entry(data_entry)
+                task = self._get_task_from_entry(data_entry)
+                if isinstance(task, str):  # Add type checking
+                    return task
             except (KeyError, AttributeError):
                 pass
 
@@ -207,12 +209,17 @@ class HuggingFaceDatasetParser(DatasetParser[T]):
     @staticmethod
     @lru_cache(maxsize=3)
     def load_dataset_cached(
-        data_source: str, task_name: str = "default", **kwargs: Any
-    ):
+        data_source: str,
+        task_name: str = "default",
+        trust_remote_code: bool = True,
+        **kwargs: Any,
+    ) -> datasets.Dataset:
         """
         Cached static method to load a dataset from Hugging Face.
         """
-        return datasets.load_dataset(data_source, task_name, **kwargs)
+        return datasets.load_dataset(
+            data_source, task_name, trust_remote_code=trust_remote_code, **kwargs
+        )
 
     def parse(
         self,

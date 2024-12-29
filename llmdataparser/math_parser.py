@@ -63,7 +63,7 @@ class MATHDatasetParser(HuggingFaceDatasetParser[MATHParseEntry]):
 
     def _get_task_from_entry(self, data_entry: dict[str, Any]) -> str:
         """Get the task name from the data entry or fall back to current task."""
-        entry_type = data_entry.get("type")
+        entry_type: str = data_entry.get("type", "")
         if entry_type and (entry_type in self._task_names):
             return entry_type
         return self._current_task or self._default_task

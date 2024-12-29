@@ -1,30 +1,36 @@
 import secrets
 from functools import lru_cache
+from typing import Any
 
 import gradio as gr
 
 from llmdataparser import ParserRegistry
-from llmdataparser.base_parser import DatasetDescription, EvaluationMetric, ParseEntry
+from llmdataparser.base_parser import (
+    DatasetDescription,
+    DatasetParser,
+    EvaluationMetric,
+    ParseEntry,
+)
 
 
 @lru_cache(maxsize=32)
-def get_parser_instance(parser_name: str):
+def get_parser_instance(parser_name: str) -> DatasetParser[Any]:
     """Get a cached parser instance by name."""
     return ParserRegistry.get_parser(parser_name)
 
 
-def get_available_splits(parser) -> list[str] | None:
+def get_available_splits(parser: DatasetParser[Any]) -> list[str] | None:
     """Get available splits for the selected parser after loading."""
     if not hasattr(parser, "split_names") or not parser.split_names:
         return None
-    return parser.split_names
+    return list(parser.split_names)
 
 
-def get_available_tasks(parser) -> list[str]:
+def get_available_tasks(parser: DatasetParser[Any]) -> list[str]:
     """Get available tasks for the selected parser."""
     if not hasattr(parser, "task_names"):
         return ["default"]
-    return parser.task_names
+    return list(parser.task_names)
 
 
 def format_entry_attributes(entry: ParseEntry) -> str:
@@ -41,7 +47,7 @@ def format_entry_attributes(entry: ParseEntry) -> str:
 
 def load_and_parse(
     parser_name: str, task_name: str | None, split_name: str | None
-) -> tuple:
+) -> tuple[int, str, str, str, str, gr.Dropdown, str]:
     """Load and parse the dataset, return the first entry and available splits."""
     try:
         parser = get_parser_instance(parser_name)
@@ -72,7 +78,7 @@ def load_and_parse(
 
         info = parser.__repr__()
         if not parsed_data:
-            return 0, "No entries found", "", "", split_dropdown, info
+            return 0, "No entries found", "", "", "", split_dropdown, info
 
         # Get the first entry
         first_entry = parsed_data[0]
@@ -92,7 +98,9 @@ def load_and_parse(
         return 0, error_msg, "", "", "", [], ""
 
 
-def update_entry(parsed_data_index: int | None, parser_name: str):
+def update_entry(
+    parsed_data_index: int | None, parser_name: str
+) -> tuple[str, str, str, str]:
     """Update the displayed entry based on the selected index."""
     try:
         if not parser_name:
@@ -120,7 +128,7 @@ def update_entry(parsed_data_index: int | None, parser_name: str):
             format_entry_attributes(entry),
         )
     except Exception as e:
-        return f"Error: {str(e)}", "", ""
+        return f"Error: {str(e)}", "", "", ""
 
 
 def update_parser_options(parser_name: str) -> tuple[gr.Dropdown, gr.Dropdown, str]:
@@ -159,7 +167,7 @@ def update_parser_options(parser_name: str) -> tuple[gr.Dropdown, gr.Dropdown, s
         )
 
 
-def clear_parser_cache():
+def clear_parser_cache() -> None:
     """Clear the parser cache."""
     get_parser_instance.cache_clear()
 
@@ -242,7 +250,8 @@ def update_metric_details(metric_name: str, parser_name: str) -> str:
         return f"Error loading metric details: {str(e)}"
 
 
-def create_interface():
+def create_interface() -> gr.Blocks:
+    """Create and return the Gradio interface."""
     with gr.Blocks() as demo:
         gr.Markdown("# LLM Evaluation Dataset Parser")
 
@@ -377,5 +386,20 @@ def create_interface():
 
 
 if __name__ == "__main__":
+    print("Starting Gradio interface...")  # Add debug logging
     demo = create_interface()
-    demo.launch(share=False)  # Enable sharing for remote access
+    try:
+        demo.launch(
+            server_port=7860,
+            auth=None,
+            ssl_keyfile=None,
+            ssl_certfile=None,
+            show_error=True,  # Changed to True for debugging
+            share=False,
+            max_threads=40,
+        )
+    except Exception as e:
+        print(f"Error launching Gradio: {e}")  # Add error logging
+        import traceback
+
+        traceback.print_exc()

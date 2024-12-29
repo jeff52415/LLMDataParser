@@ -8,8 +8,6 @@ build/
 dist/
 *.egg-info/
 
-# Poetry
-poetry.lock
 
 # Virtual environment
 .env/

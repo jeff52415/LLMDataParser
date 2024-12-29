@@ -1,5 +1,5 @@
 # llmdataparser/__init__.py
-from typing import Type
+from typing import Any, Type
 
 from .base_parser import DatasetParser
 from .bbh_parser import BBHDatasetParser
@@ -31,11 +31,13 @@ class ParserRegistry:
         cls._registry[name.lower()] = parser_class
 
     @classmethod
-    def get_parser(cls, name: str, **kwargs) -> Type[DatasetParser]:
+    def get_parser(cls, name: str, **kwargs: Any) -> DatasetParser[Any]:
+        """Get a parser instance by name."""
         parser_class = cls._registry.get(name.lower())
         if parser_class is None:
             raise ValueError(f"Parser '{name}' is not registered.")
-        return parser_class(**kwargs)
+        parser: DatasetParser[Any] = parser_class(**kwargs)
+        return parser
 
     @classmethod
     def list_parsers(cls) -> list[str]:
