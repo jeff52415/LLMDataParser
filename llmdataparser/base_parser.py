@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Any, ClassVar, Generic, List, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 
 import datasets
 
@@ -130,7 +130,7 @@ class DatasetParser(Generic[T], ABC):
             characteristics="Not specified",
         )
 
-    def get_evaluation_metrics(self) -> List[EvaluationMetric]:
+    def get_evaluation_metrics(self) -> list[EvaluationMetric]:
         """Returns the recommended evaluation metrics for the dataset."""
         return []
 

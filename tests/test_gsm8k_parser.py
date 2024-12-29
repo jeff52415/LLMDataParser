@@ -181,3 +181,47 @@ def test_different_splits_parsing(gsm8k_parser):
     assert test_count > 0
     assert train_count > 0
     assert train_count != test_count
+
+
+def test_get_dataset_description(gsm8k_parser):
+    """Test dataset description generation."""
+    description = gsm8k_parser.get_dataset_description()
+
+    assert description.name == "Grade School Math 8K (GSM8K)"
+    assert description.source == "OpenAI"
+    assert description.language == "English"
+    assert "8.5K grade school math word problems" in description.characteristics
+    assert "Training Verifiers to Solve Math Word Problems" in description.citation
+    assert "Cobbe" in description.citation
+    assert "arXiv" in description.citation
+
+
+def test_get_evaluation_metrics(gsm8k_parser):
+    """Test evaluation metrics specification."""
+    metrics = gsm8k_parser.get_evaluation_metrics()
+
+    # Check we have all expected metrics
+    metric_names = {metric.name for metric in metrics}
+    expected_names = {"exact_match", "solution_validity", "step_accuracy", "step_count"}
+    assert metric_names == expected_names
+
+    # Check exact_match metric details
+    exact_match = next(m for m in metrics if m.name == "exact_match")
+    assert exact_match.type == "string"
+    assert exact_match.primary is True
+    assert "exact match" in exact_match.description.lower()
+
+    # Check solution_validity metric details
+    solution_validity = next(m for m in metrics if m.name == "solution_validity")
+    assert solution_validity.type == "text"
+    assert solution_validity.primary is True
+    assert "valid" in solution_validity.description.lower()
+
+    # Check step metrics
+    step_accuracy = next(m for m in metrics if m.name == "step_accuracy")
+    assert step_accuracy.type == "numerical"
+    assert step_accuracy.primary is True
+
+    step_count = next(m for m in metrics if m.name == "step_count")
+    assert step_count.type == "numerical"
+    assert step_count.primary is False

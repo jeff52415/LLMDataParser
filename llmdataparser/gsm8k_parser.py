@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from typing import Any, ClassVar
 
-from llmdataparser.base_parser import HuggingFaceDatasetParser, HuggingFaceParseEntry
+from llmdataparser.base_parser import (
+    DatasetDescription,
+    EvaluationMetric,
+    HuggingFaceDatasetParser,
+    HuggingFaceParseEntry,
+)
 from llmdataparser.prompts import GSM8K_SYSTEM_PROMPT
 
 
@@ -75,6 +80,60 @@ class GSM8KDatasetParser(HuggingFaceDatasetParser[GSM8KParseEntry]):
             numerical_answer=numerical_answer,  # Now guaranteed to be int or float
             task_name=task,  # Guarantee non-None
         )
+
+    def get_dataset_description(self) -> DatasetDescription:
+        """Returns description of the GSM8K dataset."""
+        return DatasetDescription.create(
+            name="Grade School Math 8K (GSM8K)",
+            purpose="Evaluate mathematical reasoning capabilities through word problems",
+            source="OpenAI",
+            language="English",
+            format="Word problems with step-by-step solutions and numerical answers",
+            characteristics=(
+                "Collection of 8.5K grade school math word problems that require "
+                "multi-step reasoning. Problems gradually increase in difficulty "
+                "and cover basic arithmetic, word problems, and elementary algebra"
+            ),
+            citation="""@article{cobbe2021gsm8k,
+                title={Training Verifiers to Solve Math Word Problems},
+                author={Cobbe, Karl and Kosaraju, Vineet and Bavarian, Mohammad and Chen, Mark and Jun, Heewoo and Kaiser, Lukasz and Plappert, Matthias and Tworek, Jerry and Hilton, Jacob and Nakano, Reiichiro and Hesse, Christopher and Schulman, John},
+                journal={arXiv preprint arXiv:2110.14168},
+                year={2021}
+            }""",
+        )
+
+    def get_evaluation_metrics(self) -> list[EvaluationMetric]:
+        """Returns recommended evaluation metrics for GSM8K."""
+        return [
+            EvaluationMetric.create(
+                name="exact_match",
+                type="string",
+                description="Exact match comparison between predicted and correct numerical answers",
+                implementation="custom_exact_match",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="solution_validity",
+                type="text",
+                description="Assessment of whether the solution steps are mathematically valid and complete",
+                implementation="custom_solution_validator",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="step_accuracy",
+                type="numerical",
+                description="Accuracy of intermediate calculation steps (e.g., <<48/2=24>>)",
+                implementation="custom_step_accuracy",
+                primary=True,
+            ),
+            EvaluationMetric.create(
+                name="step_count",
+                type="numerical",
+                description="Analysis of the number of reasoning steps in solutions",
+                implementation="custom_step_counter",
+                primary=False,
+            ),
+        ]
 
 
 if __name__ == "__main__":
