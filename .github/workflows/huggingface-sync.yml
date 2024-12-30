@@ -18,6 +18,15 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install Hugging Face CLI
+        run: |
+          pip install --upgrade huggingface-hub
+
       - name: Login to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
@@ -26,5 +35,7 @@ jobs:
 
       - name: Push to Hugging Face Space
         run: |
-          git remote add space https://huggingface.co/spaces/JeffYang52415/LLMEval-Dataset-Parser
-          git push space main:main
+          git remote add space https://huggingface.co/spaces/JeffYang52415/LLMEval-Dataset-Parser || true
+          git fetch space || true
+          # Force push to ensure sync, use with caution
+          git push -f space main:main
