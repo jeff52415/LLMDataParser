@@ -13,10 +13,12 @@ short_description: A collection of parsers for LLM benchmark datasets
 
 **LLMDataParser** is a Python library that provides parsers for benchmark datasets used in evaluating Large Language Models (LLMs). It offers a unified interface for loading and parsing datasets like **MMLU**, **GSM8k**, and others, streamlining dataset preparation for LLM evaluation. The library aims to simplify the process of working with common LLM benchmark datasets through a consistent API.
 
+**Spaces**: You can also try out the online demo on Hugging Face Spaces:
+[LLMEval Dataset Parser Demo](https://huggingface.co/spaces/JeffYang52415/LLMEval-Dataset-Parser)
+
 ## Features
 
 - **Unified Interface**: Consistent `DatasetParser` for all datasets.
-- **LLM-Agnostic**: Independent of any specific language model.
 - **Easy to Use**: Simple methods and built-in Python types.
 - **Extensible**: Easily add support for new datasets.
 - **Gradio**: Built-in Gradio interface for interactive dataset exploration and testing.
@@ -78,22 +80,22 @@ Poetry manages the virtual environment and dependencies automatically, so you do
 Here's a simple example demonstrating how to use the library:
 
 ```python
- from llmdataparser import ParserRegistry
- # list all available parsers
- ParserRegistry.list_parsers()
- # get a parser
- parser = ParserRegistry.get_parser("mmlu")
- # load the parser
- parser.load() # optional: task_name, split
- # parse the parser
- parser.parse() # optional: split_names
+from llmdataparser import ParserRegistry
+# list all available parsers
+ParserRegistry.list_parsers()
+# get a parser
+parser = ParserRegistry.get_parser("mmlu")
+# load the parser
+parser.load() # optional: task_name, split
+# parse the parser
+parser.parse() # optional: split_names
 
- print(parser.task_names)
- print(parser.split_names)
- print(parser.get_dataset_description)
- print(parser.get_huggingface_link)
- print(parser.total_tasks)
- data = parser.get_parsed_data
+print(parser.task_names)
+print(parser.split_names)
+print(parser.get_dataset_description)
+print(parser.get_huggingface_link)
+print(parser.total_tasks)
+data = parser.get_parsed_data
 ```
 
 We also provide a Gradio demo for interactive testing:
