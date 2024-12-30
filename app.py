@@ -390,13 +390,7 @@ if __name__ == "__main__":
     demo = create_interface()
     try:
         demo.launch(
-            server_port=7860,
-            auth=None,
-            ssl_keyfile=None,
-            ssl_certfile=None,
             show_error=True,  # Changed to True for debugging
-            share=False,
-            max_threads=40,
         )
     except Exception as e:
         print(f"Error launching Gradio: {e}")  # Add error logging
