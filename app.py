@@ -6,6 +6,7 @@ import gradio as gr
 
 from llmdataparser import ParserRegistry
 from llmdataparser.base_parser import (
+    VALID_CATEGORIES,
     DatasetDescription,
     DatasetParser,
     EvaluationMetric,
@@ -250,6 +251,29 @@ def update_metric_details(metric_name: str, parser_name: str) -> str:
         return f"Error loading metric details: {str(e)}"
 
 
+def get_parser_categories(parser_name: str) -> list[str]:
+    """Get categories for a specific parser."""
+    try:
+        parser = get_parser_instance(parser_name)
+        description = parser.get_dataset_description()
+        return description.category
+    except Exception:
+        return []
+
+
+def filter_parsers_by_category(category: str | None) -> list[str]:
+    """Filter available parsers by category."""
+    if not category:
+        return ParserRegistry.list_parsers()
+
+    filtered_parsers = []
+    for parser_name in ParserRegistry.list_parsers():
+        categories = get_parser_categories(parser_name)
+        if category in categories:
+            filtered_parsers.append(parser_name)
+    return filtered_parsers
+
+
 def create_interface() -> gr.Blocks:
     """Create and return the Gradio interface."""
     with gr.Blocks(css="footer {display: none !important}") as demo:
@@ -279,6 +303,14 @@ def create_interface() -> gr.Blocks:
             with gr.Tab("Dataset Explorer"):
                 with gr.Row():
                     with gr.Column(scale=1):
+                        # Add category dropdown before parser selection
+                        category_dropdown = gr.Dropdown(
+                            choices=["All"] + list(VALID_CATEGORIES),
+                            label="Filter by Category",
+                            value="All",
+                            interactive=True,
+                        )
+
                         # Parser selection and controls
                         available_parsers = ParserRegistry.list_parsers()
                         parser_dropdown = gr.Dropdown(
@@ -344,6 +376,20 @@ def create_interface() -> gr.Blocks:
                             label="Select Primary Metric", interactive=True
                         )
                         metric_details = gr.Markdown()
+
+        # Add new event handler for category filtering
+        def update_parser_list(category: str) -> gr.Dropdown:
+            filtered_parsers = filter_parsers_by_category(
+                None if category == "All" else category
+            )
+            return gr.Dropdown(
+                choices=filtered_parsers,
+                value=filtered_parsers[0] if filtered_parsers else None,
+            )
+
+        category_dropdown.change(
+            fn=update_parser_list, inputs=[category_dropdown], outputs=[parser_dropdown]
+        )
 
         # Event handlers
         parser_dropdown.change(
