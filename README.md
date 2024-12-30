@@ -62,6 +62,35 @@ Poetry manages the virtual environment and dependencies automatically, so you do
 - **TWLegalDatasetParser**
 - **TMLUDatasetParser**
 
+## Quick Start Guide
+
+Here's a simple example demonstrating how to use the library:
+
+```python
+ from llmdataparser import ParserRegistry
+ # list all available parsers
+ ParserRegistry.list_parsers()
+ # get a parser
+ parser = ParserRegistry.get_parser("mmlu")
+ # load the parser
+ parser.load() # optional: task_name, split
+ # parse the parser
+ parser.parse() # optional: split_names
+
+ print(parser.task_names)
+ print(parser.split_names)
+ print(parser.get_dataset_description)
+ print(parser.get_huggingface_link)
+ print(parser.total_tasks)
+ data = parser.get_parsed_data
+```
+
+We also provide a Gradio demo for interactive testing:
+
+```bash
+python app.py
+```
+
 ## Adding New Dataset Parsers
 
 To add support for a new dataset, please refer to our detailed guide in [docs/adding_new_parser.md](docs/adding_new_parser.md). The guide includes:
