@@ -23,10 +23,10 @@ class YourDatasetParseEntry(HuggingFaceParseEntry):
     custom_field: str
 
     @classmethod
-    def create(cls, prompt: str, answer: str, raw_question: str,
+    def create(cls, question: str, answer: str, raw_question: str,
                raw_answer: str, task_name: str, custom_field: str) -> "YourDatasetParseEntry":
         return cls(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -41,27 +41,9 @@ class YourDatasetParser(HuggingFaceDatasetParser[YourDatasetParseEntry]):
     _data_source = "huggingface/your-dataset"
     _default_task = "default"
     _task_names = ["task1", "task2", "task3"]
-    _default_system_prompt = YOUR_SYSTEM_PROMPT
 ```
 
-### 2. Define System Prompt
-
-Add your system prompt to `llmdataparser/prompts.py`:
-
-```python
-YOUR_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
-    """\
-    You are an expert in [your domain]. Your task is to [describe the task].
-
-    Instructions:
-    1. [First instruction]
-    2. [Second instruction]
-    ...
-    """
-)
-```
-
-### 3. Implement Required Methods
+### 2. Implement Required Methods
 
 Your parser needs to implement these key methods:
 
@@ -78,11 +60,10 @@ def process_entry(
     raw_answer = row["answer"]
     task = task_name or self._get_current_task(row)
 
-    # Format the prompt
-    prompt = f"{self._system_prompt}\nQuestion: {raw_question}\nAnswer:"
+    question = f"Question: {raw_question}\nAnswer:"
 
     return YourDatasetParseEntry.create(
-        prompt=prompt,
+        question=question,
         answer=raw_answer,
         raw_question=raw_question,
         raw_answer=raw_answer,
@@ -115,7 +96,7 @@ def get_evaluation_metrics(self) -> list[EvaluationMetric]:
     ]
 ```
 
-### 4. Add Example Usage
+### 3. Add Example Usage
 
 Add example usage at the bottom of your parser file:
 
@@ -137,7 +118,7 @@ if __name__ == "__main__":
         print(f"Answer: {example.answer}")
 ```
 
-### 5. Create Tests
+### 4. Create Tests
 
 Create a test file `tests/test_your_dataset_parser.py`:
 
@@ -171,7 +152,6 @@ def test_process_entry():
 1. **Documentation**: Add clear docstrings and comments explaining your parser's functionality.
 1. **Error Handling**: Include appropriate error checking and validation.
 1. **Testing**: Write comprehensive tests covering different scenarios.
-1. **System Prompt**: Design your system prompt carefully to guide the model effectively.
 
 ## Examples
 
@@ -185,7 +165,6 @@ Look at existing parsers for reference:
 
 1. **Parse Entry Class**: Create a custom parse entry class if you need additional fields.
 1. **Task Names**: Define all available tasks in `_task_names`.
-1. **System Prompt**: Write clear instructions in the system prompt.
 1. **Process Entry**: Handle data extraction and formatting in `process_entry`.
 1. **Dataset Description**: Provide comprehensive dataset information.
 1. **Evaluation Metrics**: Define appropriate metrics for your dataset.

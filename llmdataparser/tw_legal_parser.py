@@ -88,7 +88,7 @@ class TWLegalDatasetParser(HuggingFaceDatasetParser[TWLegalParseEntry]):
             ),
             citation="""
                 url={https://huggingface.co/datasets/lianghsun/tw-legal-benchmark-v1}
-            }""",
+            """,
         )
 
     def get_evaluation_metrics(self) -> list[EvaluationMetric]:

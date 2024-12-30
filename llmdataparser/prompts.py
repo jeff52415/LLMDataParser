@@ -1,6 +1,8 @@
 import textwrap
 from typing import Final
 
+# Only for reference
+
 MMLU_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
     """\
     You are an expert answering multiple-choice questions. Select the single most accurate answer (A, B, C, or D) based on factual knowledge. Respond with the letter only.
@@ -44,7 +46,7 @@ IFEVAL_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
 
 BBH_SYSTEM_PROMPT: Final[str] = textwrap.dedent(
     """\
-    Solve this reasoning problem and respond with only the answer (letter, True/False, or Yes/No).
+    Solve this reasoning problem step by step.
 """
 )
 

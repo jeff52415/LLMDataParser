@@ -35,20 +35,22 @@ def get_available_tasks(parser: DatasetParser[Any]) -> list[str]:
 
 
 def format_entry_attributes(entry: ParseEntry) -> str:
-    """Format all attributes of a ParseEntry except prompt and answer."""
+    """Format all attributes of a ParseEntry except question and answer."""
     from dataclasses import fields
 
     # Get all field names from the dataclass
     field_names = [field.name for field in fields(entry)]
-    # Filter out prompt and answer
-    filtered_fields = [name for name in field_names if name not in ["prompt", "answer"]]
+    # Filter out question and answer
+    filtered_fields = [
+        name for name in field_names if name not in ["question", "answer"]
+    ]
     # Build the formatted string
     return "\n".join(f"{name}: {getattr(entry, name)}" for name in filtered_fields)
 
 
 def load_and_parse(
     parser_name: str, task_name: str | None, split_name: str | None
-) -> tuple[int, str, str, str, str, gr.Dropdown, str]:
+) -> tuple[int, str, str, str, gr.Dropdown, str]:
     """Load and parse the dataset, return the first entry and available splits."""
     try:
         parser = get_parser_instance(parser_name)
@@ -79,15 +81,14 @@ def load_and_parse(
 
         info = parser.__repr__()
         if not parsed_data:
-            return 0, "No entries found", "", "", "", split_dropdown, info
+            return 0, "", "", "", split_dropdown, info
 
         # Get the first entry
         first_entry = parsed_data[0]
 
         return (
             0,  # Return first index instead of list of indices
-            first_entry.prompt,
-            first_entry.raw_question,
+            first_entry.question,
             first_entry.answer,
             format_entry_attributes(first_entry),
             split_dropdown,
@@ -96,22 +97,22 @@ def load_and_parse(
     except Exception as e:
         # Make the error message more user-friendly and detailed
         error_msg = f"Failed to load dataset: {str(e)}\nParser: {parser_name}\nTask: {task_name}\nSplit: {split_name}"
-        return 0, error_msg, "", "", "", [], ""
+        return 0, error_msg, "", "", [], ""
 
 
 def update_entry(
     parsed_data_index: int | None, parser_name: str
-) -> tuple[str, str, str, str]:
+) -> tuple[str, str, str]:
     """Update the displayed entry based on the selected index."""
     try:
         if not parser_name:
-            return "Please select a parser first", "", "", ""
+            return "Please select a parser first", "", ""
 
         parser = get_parser_instance(parser_name)
         parsed_data = parser.get_parsed_data
 
         if not parsed_data:
-            return "No data available", "", "", ""
+            return "No data available", "", ""
 
         if parsed_data_index is None:
             # Random selection using secrets instead of random
@@ -123,13 +124,12 @@ def update_entry(
             entry = parsed_data[index]
 
         return (
-            entry.prompt,
-            entry.raw_question,
+            entry.question,
             entry.answer,
             format_entry_attributes(entry),
         )
     except Exception as e:
-        return f"Error: {str(e)}", "", "", ""
+        return f"Error: {str(e)}", "", ""
 
 
 def update_parser_options(parser_name: str) -> tuple[gr.Dropdown, gr.Dropdown, str]:
@@ -350,11 +350,8 @@ def create_interface() -> gr.Blocks:
 
                     with gr.Column(scale=2):
                         # Output displays
-                        prompt_output = gr.Textbox(
-                            label="Prompt", lines=5, show_copy_button=True
-                        )
-                        raw_question_output = gr.Textbox(
-                            label="Raw Question", lines=5, show_copy_button=True
+                        question_output = gr.Textbox(
+                            label="Question", lines=5, show_copy_button=True
                         )
                         answer_output = gr.Textbox(
                             label="Answer", lines=5, show_copy_button=True
@@ -411,8 +408,7 @@ def create_interface() -> gr.Blocks:
             inputs=[parser_dropdown, task_dropdown, split_dropdown],
             outputs=[
                 entry_index,
-                prompt_output,
-                raw_question_output,
+                question_output,
                 answer_output,
                 attributes_output,
                 split_dropdown,
@@ -430,8 +426,7 @@ def create_interface() -> gr.Blocks:
             fn=update_entry,
             inputs=[entry_index, parser_state],
             outputs=[
-                prompt_output,
-                raw_question_output,
+                question_output,
                 answer_output,
                 attributes_output,
             ],
