@@ -95,6 +95,7 @@ class MBPPDatasetParser(HuggingFaceDatasetParser[MBPPParseEntry]):
             purpose="A benchmark for evaluating code generation capabilities using entry-level Python programming problems",
             source="https://github.com/google-research/google-research/tree/master/mbpp",
             language="English and Python",
+            category=["Programming"],
             format="Task descriptions in English with corresponding Python solutions and automated test cases",
             characteristics=(
                 "Contains approximately 1,000 crowd-sourced Python programming problems "

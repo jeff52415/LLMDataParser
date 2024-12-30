@@ -106,6 +106,7 @@ class MGSMDatasetParser(HuggingFaceDatasetParser[MGSMParseEntry]):
             source="https://huggingface.co/datasets/juletxara/mgsm",
             language="Multilingual (11 languages)",
             format="Word problems with numerical answers and solution steps",
+            category=["Math", "MultiLingual"],
             characteristics=(
                 "Human-translated version of 250 GSM8K problems into 10 additional languages. "
                 "Each problem includes the original question from GSM8K, its translations, "

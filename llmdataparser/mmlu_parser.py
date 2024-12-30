@@ -212,6 +212,7 @@ class BaseMMLUDatasetParser(MMLUDatasetParser):
             purpose="Evaluate models' extensive world knowledge and problem-solving abilities across diverse branches of knowledge",
             source="https://huggingface.co/datasets/cais/mmlu",
             language="English",
+            category=["General Knowledge and Reasoning"],
             format="Multiple choice questions with four options (A, B, C, D)",
             characteristics=(
                 "Comprehensive evaluation benchmark spanning humanities, social sciences, hard sciences, "
@@ -332,6 +333,7 @@ class MMLUReduxDatasetParser(MMLUDatasetParser):
             source="https://huggingface.co/datasets/edinburgh-dawg/mmlu-redux",
             language="English",
             format="Multiple choice questions with four options (A, B, C, D)",
+            category=["General Knowledge and Reasoning"],
             characteristics=(
                 "A carefully curated subset of 3,000 questions across 30 MMLU subjects, "
                 "manually re-annotated to identify and classify various types of errors. "
@@ -494,6 +496,7 @@ class TMMLUPlusDatasetParser(MMLUDatasetParser):
             purpose="Evaluate language models' understanding and reasoning capabilities in Traditional Chinese across diverse subjects",
             source="https://huggingface.co/datasets/ikala/tmmluplus",
             language="Traditional Chinese",
+            category=["General Knowledge and Reasoning", "Taiwan"],
             format="Multiple choice questions with four options (A, B, C, D)",
             characteristics=(
                 "A comprehensive evaluation benchmark featuring 66 subjects from elementary "
@@ -621,6 +624,7 @@ class MMLUProDatasetParser(HuggingFaceDatasetParser[MMLUProParseEntry]):
             purpose="Provide a more robust and challenging multi-task language understanding benchmark with enhanced reasoning requirements",
             source="https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro",
             language="English",
+            category=["General Knowledge and Reasoning", "Advanced Reasoning"],
             format="Multiple choice questions with up to 10 options (expanded from original 4)",
             characteristics=(
                 "A more challenging version of MMLU containing 12K complex questions across various "

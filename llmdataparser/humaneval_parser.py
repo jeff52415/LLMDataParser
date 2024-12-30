@@ -88,6 +88,7 @@ class HumanEvalDatasetParser(HuggingFaceDatasetParser[HumanEvalParseEntry]):
             source="OpenAI",
             language="Python",
             format="Function signatures with docstrings and unit tests",
+            category=["Programming"],
             characteristics=(
                 "Collection of 164 hand-written Python programming problems. Each problem "
                 "includes a function signature, docstring, example test cases, and hidden unit "
@@ -186,6 +187,7 @@ class HumanEvalDatasetPlusParser(HumanEvalDatasetParser):
             source="EvalPlus",
             language="Python",
             format="Function signatures with docstrings and comprehensive test suites",
+            category=["Programming"],
             characteristics=(
                 "Significantly enhanced version of HumanEval with 80x more test cases. "
                 "Includes extensive edge cases, boundary conditions, stress tests, and "

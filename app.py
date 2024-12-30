@@ -252,8 +252,24 @@ def update_metric_details(metric_name: str, parser_name: str) -> str:
 
 def create_interface() -> gr.Blocks:
     """Create and return the Gradio interface."""
-    with gr.Blocks() as demo:
-        gr.Markdown("# LLM Evaluation Dataset Parser")
+    with gr.Blocks(css="footer {display: none !important}") as demo:
+        # Add header section with purpose and GitHub info
+        gr.Markdown("""
+            # LLM Evaluation Dataset Parser
+
+            ### 🎯 Purpose
+            A unified interface for parsing and exploring various LLM benchmark datasets (MMLU, MMLU-Pro, GSM8k, and more).
+            This tool helps researchers and developers to:
+            - Easily explore different benchmark datasets
+            - Access standardized parsing for multiple dataset formats
+            - View dataset descriptions and evaluation metrics
+
+            ### 🔗 Links
+            - [GitHub Repository](https://github.com/jeff52415/LLMDataParser)
+            - [Documentation](https://github.com/jeff52415/LLMDataParser#readme)
+
+            ---
+        """)
 
         # State management
         parser_state = gr.State("")

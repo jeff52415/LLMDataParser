@@ -90,6 +90,7 @@ class IFEvalDatasetParser(HuggingFaceDatasetParser[IFEvalParseEntry]):
             source="Google Research",
             language="English (BCP-47 en)",
             format="Verifiable instruction prompts with automated evaluation criteria",
+            category=["Programming"],
             characteristics=(
                 "Collection of approximately 500 verifiable instructions designed to evaluate "
                 "language models' instruction-following capabilities. Instructions include "

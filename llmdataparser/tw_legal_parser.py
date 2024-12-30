@@ -82,6 +82,7 @@ class TWLegalDatasetParser(HuggingFaceDatasetParser[TWLegalParseEntry]):
             language="Traditional Chinese",
             purpose="Evaluate models on Taiwan-specific legal knowledge and understanding",
             source="Taiwan Bar Examination questions",
+            category=["Taiwan", "General Knowledge and Reasoning", "Legal"],
             format="Multiple choice questions (A/B/C/D)",
             characteristics=(
                 "Contains questions from Taiwan's bar examination, testing understanding "

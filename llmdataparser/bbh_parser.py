@@ -106,6 +106,7 @@ class BBHDatasetParser(HuggingFaceDatasetParser[BBHParseEntry]):
                 "significantly improved through chain-of-thought prompting. The dataset "
                 "includes 23 core tasks plus additional related tasks."
             ),
+            category=["Advanced Reasoning"],
             citation=(
                 "@article{suzgun2022challenging,\n"
                 "  title={Challenging BIG-Bench Tasks and Whether Chain-of-Thought Can Solve Them},\n"

@@ -97,6 +97,7 @@ class MATHDatasetParser(HuggingFaceDatasetParser[MATHParseEntry]):
             source="Hendrycks et al., UC Berkeley (NeurIPS 2021)",
             language="English",
             format="Competition mathematics problems with step-by-step solutions",
+            category=["Math"],
             characteristics=(
                 "Collection of 12,500 challenging competition mathematics problems designed to "
                 "evaluate mathematical reasoning. Problems include step-by-step solutions that "

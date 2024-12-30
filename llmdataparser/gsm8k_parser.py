@@ -89,6 +89,7 @@ class GSM8KDatasetParser(HuggingFaceDatasetParser[GSM8KParseEntry]):
             source="OpenAI",
             language="English",
             format="Word problems with step-by-step solutions and numerical answers",
+            category=["Math"],
             characteristics=(
                 "Collection of 8.5K grade school math word problems that require "
                 "multi-step reasoning. Problems gradually increase in difficulty "

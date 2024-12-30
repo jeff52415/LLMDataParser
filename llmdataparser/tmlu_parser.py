@@ -130,6 +130,7 @@ class TMLUDatasetParser(HuggingFaceDatasetParser[TMLUParseEntry]):
             language="Traditional Chinese",
             purpose="Evaluate models on Taiwan-specific educational and professional knowledge",
             source="Various Taiwan standardized tests and professional certifications",
+            category=["Taiwan", "General Knowledge and Reasoning"],
             format="Multiple choice questions (A/B/C/D)",
             characteristics=(
                 "Covers various subjects including Advanced Subjects Test (AST), "

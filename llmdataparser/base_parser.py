@@ -9,6 +9,18 @@ import datasets
 T = TypeVar("T", bound="ParseEntry")
 
 
+# Add this after the DatasetCategory definition
+VALID_CATEGORIES = {
+    "Math",
+    "General Knowledge and Reasoning",
+    "Programming",
+    "MultiLingual",
+    "Taiwan",
+    "Advanced Reasoning",
+    "Legal",
+}
+
+
 @dataclass(frozen=True, kw_only=True, slots=True)
 class ParseEntry:
     """A simple base class for entries, customizable by each dataset parser."""
@@ -28,6 +40,7 @@ class DatasetDescription:
     source: str
     language: str
     format: str
+    category: list[str]
     characteristics: str
     citation: str | None = None
     additional_info: dict[str, Any] | None = None
@@ -40,16 +53,23 @@ class DatasetDescription:
         source: str,
         language: str,
         format: str,
+        category: list[str],
         characteristics: str,
         citation: str | None = None,
         additional_info: dict[str, Any] | None = None,
     ) -> "DatasetDescription":
+        # Validate that all categories are valid DatasetCategory values
+        for item in category:
+            assert (
+                item in VALID_CATEGORIES
+            ), f"Category '{item}' is not a valid category. Valid categories are: {VALID_CATEGORIES}"
         return cls(
             name=name,
             purpose=purpose,
             source=source,
             language=language,
             format=format,
+            category=category,
             characteristics=characteristics,
             citation=citation,
             additional_info=additional_info,
