@@ -1,0 +1,30 @@
+name: Deploy to Hugging Face Space
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Login to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+        run: |
+          huggingface-cli login --token $HF_TOKEN --add-to-git-credential
+
+      - name: Push to Hugging Face Space
+        run: |
+          git remote add space https://huggingface.co/spaces/JeffYang52415/LLMEval-Dataset-Parser
+          git push space main:main
