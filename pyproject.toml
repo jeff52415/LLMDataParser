@@ -28,7 +28,7 @@ packages = [
 start = "llmdataparser.app:main"
 
 [tool.poetry.dependencies]
-python = ">=3.12"
+python = ">=3.10"
 pandas = "^2.0.3"
 datasets = "^3.2.0"
 fsspec = "^2024.9.0"
