@@ -8,8 +8,6 @@ build/
 dist/
 *.egg-info/
 
-# Poetry
-poetry.lock
 
 # Virtual environment
 .env/
@@ -32,3 +30,15 @@ poetry.lock
 
 # Mac files
 .DS_Store
+
+#gradio cache
+.cache/
+.gradio/
+
+#notebook cache
+.ipynb_checkpoints/
+notebooks/
+
+#coverage
+.coverage
+.coverage.*

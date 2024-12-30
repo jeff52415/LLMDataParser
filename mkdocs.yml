@@ -1,0 +1,9 @@
+site_name: LLMDataParser
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+
+plugins:
+  - search

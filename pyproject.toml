@@ -1,6 +1,10 @@
+[build-system]
+requires = ["poetry-core>=1.5.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "llmdataparser"
-version = "0.1.0"
+version = "1.0.0"
 description = "A collection of parsers for LLM benchmark datasets like MMLU, MMLU-Pro, GSM8k, and more."
 authors = ["Jeff Yang <jeff52415@gmail.com>"]
 license = "MIT"
@@ -16,45 +20,66 @@ classifiers = [
     "Intended Audience :: Developers"
 ]
 
+packages = [
+    { include = "llmdataparser" }
+]
+
+[tool.poetry.scripts]
+start = "llmdataparser.app:main"
+
 [tool.poetry.dependencies]
-python = ">=3.11"
+python = ">=3.10"
 pandas = "^2.0.3"
-datasets = "^2.14.4"
+datasets = "^3.2.0"
+fsspec = "^2024.9.0"
 typing-extensions = "^4.8.0"
+ipywidgets = "^8.1.1"
+gradio = "^4.19.2"
+pyyaml = "^6.0.1"   # Add this for configuration handling
+tqdm = "^4.66.1"    # Add this for progress bars
+numpy = "^1.24.0"   # Add this for numerical operations
+mkdocs = "^1.5.0"
+mkdocs-material = "^9.5.0"  # Optional but recommended for better documentation
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
-black = { version = "^23.9.1", allow-prereleases = true }
-flake8 = "^6.1.0"
+pytest = "^7.0.0"
 isort = "^5.12.0"
 mypy = "^1.5.1"
 pre-commit = "^3.4.0"
 types-python-dateutil = "^2.8.19.14"
 ipykernel = "^6.7.0"
-
-[tool.black]
-line-length = 88
-target-version = ["py311"]
-exclude = """
-/(
-    \\.git
-  | \\.venv
-  | build
-  | dist
-)/
-"""
-
-[tool.isort]
-profile = "black"
-line_length = 88
-known_first_party = ["llmdataparser"]
-
+coverage = "^7.4.1"
+pytest-cov = "^4.1.0"
+evaluate = "^0.4.0"
 
 [tool.ruff]
 line-length = 88
-select = ["E", "F"]  # or specify checks explicitly without E501
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
 ignore = ["E501"]
 
-[build-system]
-requires = ["poetry-core>=1.5.0"]
-build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+exclude = ["tests/.*"]
+ignore_missing_imports = true
+follow_imports = "silent"
+
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra -q --cov=llmdataparser --cov-report=term-missing"
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]
