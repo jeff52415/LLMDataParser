@@ -62,6 +62,7 @@ jobs:
 
       - name: Build documentation
         run: |
+          poetry add mkdocs mkdocs-material --group dev
           poetry run mkdocs build
         if: matrix.python-version == '3.12'
 
