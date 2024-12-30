@@ -1,3 +1,14 @@
+---
+title: LLMEval Dataset Parser
+emoji: ⚡
+colorFrom: green
+colorTo: gray
+sdk: docker
+pinned: false
+license: mit
+short_description: A collection of parsers for LLM benchmark datasets
+---
+
 # LLMDataParser
 
 **LLMDataParser** is a Python library that provides parsers for benchmark datasets used in evaluating Large Language Models (LLMs). It offers a unified interface for loading and parsing datasets like **MMLU**, **GSM8k**, and others, streamlining dataset preparation for LLM evaluation. The library aims to simplify the process of working with common LLM benchmark datasets through a consistent API.

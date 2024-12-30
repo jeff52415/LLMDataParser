@@ -65,4 +65,5 @@ COPY --chown=app:app . .
 EXPOSE 7860
 
 # Run the application
-CMD ["python", "app.py"]
+ENTRYPOINT ["python"]
+CMD ["app.py"]
