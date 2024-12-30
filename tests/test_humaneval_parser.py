@@ -42,7 +42,7 @@ def plus_sample_entry():
 def test_humaneval_parse_entry_creation():
     """Test creation of HumanEvalParseEntry"""
     entry = HumanEvalParseEntry.create(
-        prompt="test prompt",
+        question="test question",
         answer="test answer",
         raw_question="raw question",
         task_id="HumanEval/1",
@@ -51,7 +51,7 @@ def test_humaneval_parse_entry_creation():
         task_name="openai_humaneval",
     )
 
-    assert entry.prompt == "test prompt"
+    assert entry.question == "test question"
     assert entry.answer == "test answer"
     assert entry.raw_question == "raw question"
     assert entry.raw_answer == "test answer"  # Should match answer
@@ -65,7 +65,7 @@ def test_humaneval_parse_entry_validation():
     """Test validation of required fields"""
     with pytest.raises(ValueError, match="Task ID cannot be empty"):
         HumanEvalParseEntry.create(
-            prompt="test",
+            question="test",
             answer="test",
             raw_question="test",
             task_id="",  # Empty task_id should raise error
@@ -76,7 +76,7 @@ def test_humaneval_parse_entry_validation():
 
     with pytest.raises(ValueError, match="Entry point cannot be empty"):
         HumanEvalParseEntry.create(
-            prompt="test",
+            question="test",
             answer="test",
             raw_question="test",
             task_id="test",
@@ -93,9 +93,7 @@ def test_process_entry(parser, sample_entry):
     assert isinstance(result, HumanEvalParseEntry)
     assert result.task_id == "HumanEval/0"
     assert result.entry_point == "add"
-    assert (
-        result.prompt == f"{parser._default_system_prompt}\n\n{sample_entry['prompt']}"
-    )
+
     assert result.answer == sample_entry["canonical_solution"]
     assert result.test == sample_entry["test"]
     assert result.task_name == "openai_humaneval"
@@ -147,10 +145,7 @@ def test_plus_process_entry(plus_parser, plus_sample_entry):
     assert isinstance(result, HumanEvalParseEntry)
     assert result.task_id == "HumanEval/0"
     assert result.entry_point == "add"
-    assert (
-        result.prompt
-        == f"{plus_parser._default_system_prompt}\n\n{plus_sample_entry['prompt']}"
-    )
+
     assert result.answer == plus_sample_entry["canonical_solution"]
     assert result.test == plus_sample_entry["test"]
     assert result.task_name == "default"
@@ -191,7 +186,7 @@ def test_get_dataset_description(parser, plus_parser):
     assert "evalplus" in plus_description.citation
 
 
-def test_get_evaluation_metrics(parser, plus_parser):
+def test_get_evaluation_metrics(parser):
     """Test evaluation metrics generation for both parsers."""
     # Test original HumanEval metrics
     metrics = parser.get_evaluation_metrics()

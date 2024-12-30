@@ -7,7 +7,6 @@ from llmdataparser.base_parser import (
     HuggingFaceDatasetParser,
     HuggingFaceParseEntry,
 )
-from llmdataparser.prompts import MMLU_PRO_SYSTEM_PROMPT, MMLU_SYSTEM_PROMPT
 
 MMLU_VALID_ANSWERS: Final[set[str]] = {"A", "B", "C", "D"}
 MMLU_PRO_VALID_ANSWERS: Final[set[str]] = {
@@ -36,7 +35,7 @@ class MMLUParseEntry(HuggingFaceParseEntry):
     @classmethod
     def create(
         cls,
-        prompt: str,
+        question: str,
         answer: str,
         raw_question: str,
         raw_choices: list[str],
@@ -50,7 +49,7 @@ class MMLUParseEntry(HuggingFaceParseEntry):
         if not task_name:
             raise ValueError("Task name cannot be empty")
         return cls(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -69,7 +68,7 @@ class MMLUProParseEntry(HuggingFaceParseEntry):
     @classmethod
     def create(
         cls,
-        prompt: str,
+        question: str,
         answer: str,
         raw_question: str,
         raw_choices: list[str],
@@ -83,7 +82,7 @@ class MMLUProParseEntry(HuggingFaceParseEntry):
         if not task_name:
             raise ValueError("Task name cannot be empty")
         return cls(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_choices=raw_choices,
@@ -95,8 +94,6 @@ class MMLUProParseEntry(HuggingFaceParseEntry):
 class MMLUDatasetParser(HuggingFaceDatasetParser[MMLUParseEntry]):
     """Base class for MMLU dataset parsers with common functionality."""
 
-    _default_system_prompt = MMLU_SYSTEM_PROMPT
-
     def _get_task_from_entry(self, data_entry: dict[str, Any]) -> str:
         """Get the task name from the data entry or default task name."""
         task_name: str = data_entry.get("subject", "")
@@ -106,7 +103,7 @@ class MMLUDatasetParser(HuggingFaceDatasetParser[MMLUParseEntry]):
         self, row: dict[str, Any], task_name: str | None = None, **kwargs: Any
     ) -> MMLUParseEntry:
         """
-        Generate a prompt and expected answer from the given row.
+        Generate a question and expected answer from the given row.
 
         Args:
             row: A data point to be formatted.
@@ -127,11 +124,11 @@ class MMLUDatasetParser(HuggingFaceDatasetParser[MMLUParseEntry]):
         raw_choices = row["choices"]
         raw_answer = str(row["answer"])  # Ensure raw_answer is a string
 
-        prompt = f"{self._system_prompt}\nQuestion: {raw_question}\n{choices}\nAnswer:"
+        question = f"Question: {raw_question}\n{choices}\nAnswer:"
         answer_letter = chr(65 + int(raw_answer))  # Convert index to 'A', 'B', 'C', 'D'
 
         return MMLUParseEntry.create(
-            prompt=prompt,
+            question=question,
             answer=answer_letter,
             raw_question=raw_question,
             raw_choices=raw_choices,
@@ -482,11 +479,11 @@ class TMMLUPlusDatasetParser(MMLUDatasetParser):
         raw_question = row["question"]
         raw_answer = row["answer"]
 
-        prompt = f"{self._system_prompt}\nQuestion: {raw_question}\n{choices}\nAnswer:"
+        question = f"Question: {raw_question}\n{choices}\nAnswer:"
         task = task_name or self._get_current_task(row)
 
         return MMLUParseEntry.create(
-            prompt, raw_answer, raw_question, raw_choices, raw_answer, task
+            question, raw_answer, raw_question, raw_choices, raw_answer, task
         )
 
     def get_dataset_description(self) -> DatasetDescription:
@@ -572,7 +569,6 @@ class MMLUProDatasetParser(HuggingFaceDatasetParser[MMLUProParseEntry]):
         "computer_science",
         "history",
     ]
-    _default_system_prompt = MMLU_PRO_SYSTEM_PROMPT
 
     def _get_task_from_entry(self, data_entry: dict[str, Any]) -> str:
         """Get the task name from the data entry or default task name."""
@@ -586,7 +582,7 @@ class MMLUProDatasetParser(HuggingFaceDatasetParser[MMLUProParseEntry]):
         self, row: dict[str, Any], task_name: str | None = None, **kwargs: Any
     ) -> MMLUProParseEntry:
         """
-        Generate a prompt and expected answer from the given row.
+        Generate a question and expected answer from the given row.
 
         Args:
             row (dict[str, Any]): A data point to be formatted with MMLU Pro specific structure
@@ -608,13 +604,13 @@ class MMLUProDatasetParser(HuggingFaceDatasetParser[MMLUProParseEntry]):
         raw_answer = row["answer"]
         answer_index = row["answer_index"]
 
-        prompt = f"{self._system_prompt}\nQuestion: {raw_question}\n{choices}\nAnswer:"
+        question = f"Question: {raw_question}\n{choices}\nAnswer:"
         answer_letter = chr(
             65 + answer_index
         )  # Convert index to 'A', 'B', 'C', 'D', etc.
 
         return MMLUProParseEntry.create(
-            prompt, answer_letter, raw_question, raw_choices, raw_answer, final_task
+            question, answer_letter, raw_question, raw_choices, raw_answer, final_task
         )
 
     def get_dataset_description(self) -> DatasetDescription:

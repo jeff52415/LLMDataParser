@@ -44,7 +44,7 @@ def sample_math_entries():
 def test_math_parse_entry_creation_valid():
     """Test valid creation of MATHParseEntry with all fields."""
     entry = MATHParseEntry.create(
-        prompt="Test prompt",
+        question="Test question",
         answer="Test answer",
         raw_question="Test question",
         raw_answer="Test solution",
@@ -54,7 +54,7 @@ def test_math_parse_entry_creation_valid():
     )
 
     assert isinstance(entry, MATHParseEntry)
-    assert entry.prompt == "Test prompt"
+    assert entry.question == "Test question"
     assert entry.answer == "Test answer"
     assert entry.raw_question == "Test question"
     assert entry.raw_answer == "Test solution"
@@ -85,9 +85,7 @@ def test_process_entry(math_parser, test_case):
     entry = math_parser.process_entry(test_case, task_name=test_case["type"])
 
     assert isinstance(entry, MATHParseEntry)
-    assert (
-        entry.prompt == f"{math_parser._default_system_prompt}\n{test_case['problem']}"
-    )
+
     assert entry.answer == test_case["solution"]
     assert entry.raw_question == test_case["problem"]
     assert entry.raw_answer == test_case["solution"]
@@ -108,7 +106,6 @@ def test_math_parser_initialization(math_parser):
         math_parser.get_huggingface_link
         == "https://huggingface.co/datasets/lighteval/MATH"
     )
-    assert "mathematics problem" in math_parser._default_system_prompt.lower()
 
 
 def test_get_current_task(math_parser):

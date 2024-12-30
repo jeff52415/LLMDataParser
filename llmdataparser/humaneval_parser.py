@@ -7,7 +7,6 @@ from llmdataparser.base_parser import (
     HuggingFaceDatasetParser,
     HuggingFaceParseEntry,
 )
-from llmdataparser.prompts import HUMANEVAL_SYSTEM_PROMPT
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -22,7 +21,7 @@ class HumanEvalParseEntry(HuggingFaceParseEntry):
     @classmethod
     def create(
         cls,
-        prompt: str,
+        question: str,
         answer: str,
         raw_question: str,
         task_id: str,
@@ -35,7 +34,7 @@ class HumanEvalParseEntry(HuggingFaceParseEntry):
         if not entry_point:
             raise ValueError("Entry point cannot be empty")
         return cls(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=answer,  # In HumanEval, the canonical solution is the raw answer
@@ -52,7 +51,6 @@ class HumanEvalDatasetParser(HuggingFaceDatasetParser[HumanEvalParseEntry]):
     _data_source: ClassVar[str] = "openai/openai_humaneval"
     _default_task: ClassVar[str] = "openai_humaneval"
     _task_names: ClassVar[list[str]] = ["openai_humaneval"]
-    _default_system_prompt: ClassVar[str] = HUMANEVAL_SYSTEM_PROMPT
 
     def process_entry(
         self, row: dict[str, Any], task_name: str | None = None, **kwargs: Any
@@ -64,14 +62,13 @@ class HumanEvalDatasetParser(HuggingFaceDatasetParser[HumanEvalParseEntry]):
         entry_point = row["entry_point"]
         test = row["test"]
 
-        # Combine system prompt with the function signature and docstring
-        prompt = f"{self._system_prompt}\n\n{raw_question}"
+        question = str(raw_question)
 
         # Use task_name if provided, otherwise use default
         task = task_name or self._get_current_task(row)
 
         return HumanEvalParseEntry.create(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             task_id=task_id,
@@ -151,7 +148,6 @@ class HumanEvalDatasetPlusParser(HumanEvalDatasetParser):
     _data_source: ClassVar[str] = "evalplus/humanevalplus"
     _default_task: ClassVar[str] = "default"
     _task_names: ClassVar[list[str]] = ["default"]
-    _default_system_prompt: ClassVar[str] = HUMANEVAL_SYSTEM_PROMPT
 
     def process_entry(
         self, row: dict[str, Any], task_name: str | None = None, **kwargs: Any
@@ -163,14 +159,12 @@ class HumanEvalDatasetPlusParser(HumanEvalDatasetParser):
         entry_point = row["entry_point"]
         test = row["test"]
 
-        # Combine system prompt with the function signature and docstring
-        prompt = f"{self._system_prompt}\n\n{raw_question}"
-
+        question = str(raw_question)
         # Use task_name if provided, otherwise use default
         task = task_name or self._get_current_task(row)
 
         return HumanEvalParseEntry.create(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             task_id=task_id,
@@ -264,7 +258,7 @@ if __name__ == "__main__":
         print("\nExample parsed entry:")
         print(f"Task ID: {example.task_id}")
         print(f"Entry Point: {example.entry_point}")
-        print(f"Prompt:\n{example.prompt}")
+        print(f"Question:\n{example.question}")
         print(f"Solution:\n{example.answer}")
 
     parser = HumanEvalDatasetPlusParser()

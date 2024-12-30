@@ -7,7 +7,6 @@ from llmdataparser.base_parser import (
     HuggingFaceDatasetParser,
     HuggingFaceParseEntry,
 )
-from llmdataparser.prompts import BBH_SYSTEM_PROMPT  # You'll need to create this
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -17,14 +16,14 @@ class BBHParseEntry(HuggingFaceParseEntry):
     @classmethod
     def create(
         cls,
-        prompt: str,
+        question: str,
         answer: str,
         raw_question: str,
         raw_answer: str,
         task_name: str,
     ) -> "BBHParseEntry":
         return cls(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -66,7 +65,6 @@ class BBHDatasetParser(HuggingFaceDatasetParser[BBHParseEntry]):
         "word_sorting",
     ]
     _default_task: ClassVar[str] = "reasoning_about_colored_objects"
-    _default_system_prompt: ClassVar[str] = BBH_SYSTEM_PROMPT
 
     def process_entry(
         self, row: dict[str, Any], task_name: str | None = None, **kwargs: Any
@@ -78,14 +76,13 @@ class BBHDatasetParser(HuggingFaceDatasetParser[BBHParseEntry]):
         # Remove parentheses from the answer
         clean_answer = raw_answer.strip("()")
 
-        # Combine system prompt with the question
-        prompt = f"{self._system_prompt}\n\n{raw_question}"
+        question = str(raw_question)
 
         # Use task_name if provided, otherwise use default
         task = task_name or self._get_current_task(row)
 
         return BBHParseEntry.create(
-            prompt=prompt,
+            question=question,
             answer=clean_answer,
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -176,5 +173,5 @@ if __name__ == "__main__":
         example = parsed_data[0]
         print("\nExample parsed entry:")
         print(f"Task: {example.task_name}")
-        print(f"Question: {example.raw_question}")
+        print(f"Question: {example.question}")
         print(f"Answer: {example.answer}")

@@ -7,7 +7,6 @@ from llmdataparser.base_parser import (
     HuggingFaceDatasetParser,
     HuggingFaceParseEntry,
 )
-from llmdataparser.prompts import MBPP_SYSTEM_PROMPT
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -23,7 +22,7 @@ class MBPPParseEntry(HuggingFaceParseEntry):
     @classmethod
     def create(
         cls,
-        prompt: str,
+        question: str,
         answer: str,
         raw_question: str,
         task_id: int,
@@ -37,7 +36,7 @@ class MBPPParseEntry(HuggingFaceParseEntry):
             raise ValueError("Task ID must be an integer")
 
         return cls(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=answer,  # In MBPP, the code solution is the raw answer
@@ -56,7 +55,6 @@ class MBPPDatasetParser(HuggingFaceDatasetParser[MBPPParseEntry]):
     _data_source: ClassVar[str] = "google-research-datasets/mbpp"
     _default_task: ClassVar[str] = "full"  # Can be 'full' or 'sanitized'
     _task_names: ClassVar[list[str]] = ["full", "sanitized"]
-    _default_system_prompt: ClassVar[str] = MBPP_SYSTEM_PROMPT
 
     def process_entry(
         self, row: dict[str, Any], task_name: str | None = None, **kwargs: Any
@@ -69,15 +67,14 @@ class MBPPDatasetParser(HuggingFaceDatasetParser[MBPPParseEntry]):
         test_setup_code = row.get("test_setup_code", "")
         challenge_test_list = row.get("challenge_test_list", [])
 
-        # Combine system prompt with the task description
-        prompt = f"{self._system_prompt}\n\nTask: {raw_question}"
+        question = str(raw_question)
 
         # Use task_name if provided, otherwise use default
         task = task_name or self._get_current_task(row)
         source_file = row.get("source_file", "")
 
         return MBPPParseEntry.create(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             task_id=task_id,

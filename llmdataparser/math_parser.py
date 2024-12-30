@@ -20,7 +20,7 @@ class MATHParseEntry(HuggingFaceParseEntry):
     @classmethod
     def create(
         cls,
-        prompt: str,
+        question: str,
         answer: str,
         raw_question: str,
         raw_answer: str,
@@ -29,7 +29,7 @@ class MATHParseEntry(HuggingFaceParseEntry):
         solution: str,
     ) -> "MATHParseEntry":
         return cls(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -54,9 +54,7 @@ class MATHDatasetParser(HuggingFaceDatasetParser[MATHParseEntry]):
         "all",
     ]
     _default_task: ClassVar[str] = "all"
-    _default_system_prompt: ClassVar[str] = (
-        "Solve the following mathematics problem step by step:"
-    )
+
     _valid_levels: ClassVar[set[str]] = {
         f"Level {i}" for i in range(1, 6)
     }  # Levels 1-5 are valid
@@ -80,7 +78,7 @@ class MATHDatasetParser(HuggingFaceDatasetParser[MATHParseEntry]):
             level = "Unknown"
 
         return MATHParseEntry.create(
-            prompt=f"{self._system_prompt}\n{row['problem']}",
+            question=str(row["problem"]),
             answer=row["solution"],
             raw_question=row["problem"],
             raw_answer=row["solution"],
@@ -187,5 +185,5 @@ if __name__ == "__main__":
         print("\nExample parsed entry:")
         print(f"Task: {example.task_name}")
         print(f"Level: {example.level}")
-        print(f"Question: {example.raw_question}")
+        print(f"Question: {example.question}")
         print(f"Solution: {example.solution}")

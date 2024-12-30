@@ -47,7 +47,7 @@ def sample_tmlu_entries():
 def test_tmlu_parse_entry_creation_valid():
     """Test valid creation of TMLUParseEntry."""
     entry = TMLUParseEntry.create(
-        prompt="Test prompt",
+        question="Test question",
         answer="A",
         raw_question="Test question",
         raw_choices=["choice1", "choice2", "choice3", "choice4"],
@@ -57,7 +57,7 @@ def test_tmlu_parse_entry_creation_valid():
         metadata={"source": "test"},
     )
     assert isinstance(entry, TMLUParseEntry)
-    assert entry.prompt == "Test prompt"
+    assert entry.question == "Test question"
     assert entry.answer == "A"
     assert entry.raw_choices == ["choice1", "choice2", "choice3", "choice4"]
     assert entry.explanation == "Test explanation"
@@ -71,7 +71,7 @@ def test_tmlu_parse_entry_creation_invalid(invalid_answer):
         ValueError, match="Invalid answer_letter.*must be one of A, B, C, D"
     ):
         TMLUParseEntry.create(
-            prompt="Test prompt",
+            question="Test question",
             answer=invalid_answer,
             raw_question="Test question",
             raw_choices=["choice1", "choice2", "choice3", "choice4"],
@@ -138,26 +138,6 @@ def test_different_tasks_parsing(tmlu_parser):
 
     assert chinese_count > 0
     assert math_count > 0
-
-
-def test_system_prompt_override(tmlu_parser):
-    """Test overriding the default system prompt."""
-    custom_prompt = "Custom system prompt for testing"
-    parser = TMLUDatasetParser(system_prompt=custom_prompt)
-
-    test_entry = {
-        "question": "Test question",
-        "A": "Choice A",
-        "B": "Choice B",
-        "C": "Choice C",
-        "D": "Choice D",
-        "answer": "A",
-        "explanation": "Test explanation",
-        "metadata": {"source": "test"},
-    }
-
-    entry = parser.process_entry(test_entry)
-    assert custom_prompt in entry.prompt
 
 
 def test_metadata_handling(tmlu_parser, sample_tmlu_entries):

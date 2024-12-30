@@ -70,7 +70,7 @@ def sample_mmlu_pro_entries():
 def test_mmlu_parse_entry_creation_valid():
     """Test valid creation of MMLUParseEntry."""
     entry = MMLUParseEntry.create(
-        prompt="Test prompt",
+        question="Test question",
         answer="A",
         raw_question="Test question",
         raw_choices=["choice1", "choice2", "choice3", "choice4"],
@@ -78,7 +78,7 @@ def test_mmlu_parse_entry_creation_valid():
         task_name="test_task",
     )
     assert isinstance(entry, MMLUParseEntry)
-    assert entry.prompt == "Test prompt"
+    assert entry.question == "Test question"
     assert entry.answer == "A"
     assert entry.raw_choices == ["choice1", "choice2", "choice3", "choice4"]
     assert entry.task_name == "test_task"
@@ -91,7 +91,7 @@ def test_mmlu_parse_entry_creation_invalid(invalid_answer):
         ValueError, match="Invalid answer_letter.*must be one of A, B, C, D"
     ):
         MMLUParseEntry.create(
-            prompt="Test prompt",
+            question="Test question",
             answer=invalid_answer,
             raw_question="Test question",
             raw_choices=["choice1", "choice2", "choice3", "choice4"],
@@ -106,10 +106,10 @@ def test_process_entry_base(base_parser, sample_mmlu_entries):
 
     assert isinstance(entry, MMLUParseEntry)
     assert entry.answer == "B"  # Index 1 maps to B
-    assert "A. London" in entry.prompt
-    assert "B. Paris" in entry.prompt
-    assert "C. Berlin" in entry.prompt
-    assert "D. Madrid" in entry.prompt
+    assert "A. London" in entry.question
+    assert "B. Paris" in entry.question
+    assert "C. Berlin" in entry.question
+    assert "D. Madrid" in entry.question
     assert entry.raw_question == "What is the capital of France?"
     assert entry.raw_choices == ["London", "Paris", "Berlin", "Madrid"]
     assert entry.raw_answer == "1"
@@ -119,7 +119,7 @@ def test_process_entry_base(base_parser, sample_mmlu_entries):
 def test_mmlu_pro_parse_entry_creation_valid():
     """Test valid creation of MMLUProParseEntry."""
     entry = MMLUProParseEntry.create(
-        prompt="Test prompt",
+        question="Test question",
         answer="E",  # MMLU Pro supports up to J
         raw_question="Test question",
         raw_choices=["choice1", "choice2", "choice3", "choice4", "choice5"],
@@ -139,7 +139,7 @@ def test_process_entry_mmlu_pro(mmlu_pro_parser, sample_mmlu_pro_entries):
 
     assert isinstance(entry, MMLUProParseEntry)
     assert entry.answer == "B"  # Index 1 maps to B
-    assert "O(n log n)" in entry.prompt
+    assert "O(n log n)" in entry.question
     assert entry.task_name == "computer_science"
     assert len(entry.raw_choices) == 6
 

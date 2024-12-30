@@ -25,7 +25,7 @@ VALID_CATEGORIES = {
 class ParseEntry:
     """A simple base class for entries, customizable by each dataset parser."""
 
-    prompt: str
+    question: str
     answer: str
     raw_question: str
     raw_answer: str
@@ -166,18 +166,14 @@ class HuggingFaceDatasetParser(DatasetParser[T]):
     _task_names: ClassVar[list[str]]
     # _default_task is the default task to use if no task is specified, e.g. "algebra"
     _default_task: ClassVar[str]
-    # _default_system_prompt is the default system prompt to use if no system prompt is specified
-    _default_system_prompt: ClassVar[str]
     # _hidden_task_names is the list of task names that are hidden in the dataset, e.g. ["math", "physics", "chemistry"]
     _hidden_task_names: ClassVar[list[str]] = []
 
-    def __init__(self, system_prompt: str | None = None, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """
         Initialize a HuggingFaceDatasetParser.
 
         Args:
-            system_prompt: Optional custom system prompt to use instead of the default.
-                         If not provided, will use the class's _default_system_prompt.
             **kwargs: Additional keyword arguments passed to the parent class.
         """
         super().__init__()
@@ -187,8 +183,6 @@ class HuggingFaceDatasetParser(DatasetParser[T]):
         self.split_names: list[str] = []
         # _current_task is the task currently being processed, e.g. "algebra"
         self._current_task: str = ""
-        # _system_prompt is the system prompt currently being used
-        self._system_prompt: str = system_prompt or self._default_system_prompt
 
     def _get_current_task(self, data_entry: dict[str, Any] | None = None) -> str:
         """

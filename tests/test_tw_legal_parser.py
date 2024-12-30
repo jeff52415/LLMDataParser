@@ -35,7 +35,7 @@ def sample_tw_legal_entries():
 def test_tw_legal_parse_entry_creation_valid():
     """Test valid creation of TWLegalParseEntry."""
     entry = TWLegalParseEntry.create(
-        prompt="Test prompt",
+        question="Test question",
         answer="A",
         raw_question="Test question",
         raw_choices=["choice1", "choice2", "choice3", "choice4"],
@@ -43,7 +43,7 @@ def test_tw_legal_parse_entry_creation_valid():
         task_name="default",
     )
     assert isinstance(entry, TWLegalParseEntry)
-    assert entry.prompt == "Test prompt"
+    assert entry.question == "Test question"
     assert entry.answer == "A"
     assert entry.raw_choices == ["choice1", "choice2", "choice3", "choice4"]
 
@@ -55,7 +55,7 @@ def test_tw_legal_parse_entry_creation_invalid(invalid_answer):
         ValueError, match="Invalid answer_letter.*must be one of A, B, C, D"
     ):
         TWLegalParseEntry.create(
-            prompt="Test prompt",
+            question="Test question",
             answer=invalid_answer,
             raw_question="Test question",
             raw_choices=["choice1", "choice2", "choice3", "choice4"],
@@ -70,10 +70,10 @@ def test_process_entry(tw_legal_parser, sample_tw_legal_entries):
 
     assert isinstance(entry, TWLegalParseEntry)
     assert entry.answer == "D"
-    assert "A. 法人於法令限制內，有享受權利負擔義務之能力" in entry.prompt
-    assert "B. 法人因目的之達到而消滅" in entry.prompt
-    assert "C. 法人非依法律之規定，不得成立" in entry.prompt
-    assert "D. 法人於登記前，即取得權利能力" in entry.prompt
+    assert "A. 法人於法令限制內，有享受權利負擔義務之能力" in entry.question
+    assert "B. 法人因目的之達到而消滅" in entry.question
+    assert "C. 法人非依法律之規定，不得成立" in entry.question
+    assert "D. 法人於登記前，即取得權利能力" in entry.question
     assert entry.raw_question == "依民法規定，下列關於法人之敘述，何者錯誤？"
     assert len(entry.raw_choices) == 4
 
@@ -120,24 +120,6 @@ def test_data_parsing(tw_legal_parser):
     parsed_data = tw_legal_parser.get_parsed_data
     assert all(isinstance(entry, TWLegalParseEntry) for entry in parsed_data)
     assert all(entry.answer in {"A", "B", "C", "D"} for entry in parsed_data)
-
-
-def test_system_prompt_override(tw_legal_parser):
-    """Test overriding the default system prompt."""
-    custom_prompt = "Custom system prompt for testing"
-    parser = TWLegalDatasetParser(system_prompt=custom_prompt)
-
-    test_entry = {
-        "question": "Test question",
-        "A": "Choice A",
-        "B": "Choice B",
-        "C": "Choice C",
-        "D": "Choice D",
-        "answer": "A",
-    }
-
-    entry = parser.process_entry(test_entry)
-    assert custom_prompt in entry.prompt
 
 
 def test_get_dataset_description(tw_legal_parser):

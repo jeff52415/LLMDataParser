@@ -30,7 +30,7 @@ def sample_row():
 def test_gsm8k_parse_entry_creation_valid():
     """Test valid creation of GSM8KParseEntry."""
     entry = GSM8KParseEntry.create(
-        prompt="Test prompt",
+        question="Test question",
         answer="5",
         raw_question="Test question",
         raw_answer="Solution steps #### 5",
@@ -39,7 +39,7 @@ def test_gsm8k_parse_entry_creation_valid():
         numerical_answer=5,
     )
     assert isinstance(entry, GSM8KParseEntry)
-    assert entry.prompt == "Test prompt"
+    assert entry.question == "Test question"
     assert entry.answer == "5"
     assert entry.solution == "Solution steps"
     assert entry.numerical_answer == 5
@@ -83,7 +83,6 @@ def test_full_parse_workflow(loaded_gsm8k_parser):
     assert isinstance(first_entry.numerical_answer, (str, int, float))
     assert "####" in first_entry.raw_answer
     assert first_entry.solution
-    assert first_entry.prompt.startswith(loaded_gsm8k_parser._system_prompt)
 
 
 def test_process_entry(gsm8k_parser, sample_row):
@@ -95,7 +94,6 @@ def test_process_entry(gsm8k_parser, sample_row):
     assert "Janet has 3 apples" in entry.raw_question
     assert "#### 5" in entry.raw_answer
     assert "Let's solve this step by step:" in entry.solution
-    assert gsm8k_parser._system_prompt in entry.prompt
     assert entry.task_name == "main"
 
 

@@ -7,7 +7,6 @@ from llmdataparser.base_parser import (
     HuggingFaceDatasetParser,
     HuggingFaceParseEntry,
 )
-from llmdataparser.prompts import MGSM_SYSTEM_PROMPT
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -21,7 +20,7 @@ class MGSMParseEntry(HuggingFaceParseEntry):
     @classmethod
     def create(
         cls,
-        prompt: str,
+        question: str,
         answer: str,
         raw_question: str,
         raw_answer: str,
@@ -31,7 +30,7 @@ class MGSMParseEntry(HuggingFaceParseEntry):
         language: str,
     ) -> "MGSMParseEntry":
         return cls(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -60,7 +59,6 @@ class MGSMDatasetParser(HuggingFaceDatasetParser[MGSMParseEntry]):
         "th",
         "zh",
     ]
-    _default_system_prompt: ClassVar[str] = MGSM_SYSTEM_PROMPT
 
     def process_entry(
         self, row: dict[str, Any], task_name: str | None = None, **kwargs: Any
@@ -73,7 +71,7 @@ class MGSMDatasetParser(HuggingFaceDatasetParser[MGSMParseEntry]):
             task_name: Language code for the current task
 
         Returns:
-            MGSMParseEntry: Processed entry with prompt, answer, and metadata
+            MGSMParseEntry: Processed entry with question, answer, and metadata
         """
         task = task_name or self._get_current_task(row)
         raw_question = row["question"]
@@ -81,14 +79,13 @@ class MGSMDatasetParser(HuggingFaceDatasetParser[MGSMParseEntry]):
         numerical_answer = row["answer_number"]
         equation_solution = row["equation_solution"]
 
-        # Construct the prompt with the system prompt and question
-        prompt = f"{self._system_prompt}\n{raw_question}"
+        question = str(raw_question)
 
         # Use numerical answer as string for the answer field if no detailed answer is provided
         answer = raw_answer if raw_answer else str(numerical_answer)
 
         return MGSMParseEntry.create(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -188,7 +185,7 @@ if __name__ == "__main__":
     parser.parse()
 
     parsed_data = parser.get_parsed_data
-    pprint(parsed_data[0].prompt)
+    pprint(parsed_data[0].question)
     pprint(parsed_data[0].answer)
     pprint(parsed_data[0].raw_question)
     pprint(parsed_data[0].numerical_answer)

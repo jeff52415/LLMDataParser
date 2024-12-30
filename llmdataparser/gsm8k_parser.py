@@ -7,7 +7,6 @@ from llmdataparser.base_parser import (
     HuggingFaceDatasetParser,
     HuggingFaceParseEntry,
 )
-from llmdataparser.prompts import GSM8K_SYSTEM_PROMPT
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -21,7 +20,7 @@ class GSM8KParseEntry(HuggingFaceParseEntry):
     @classmethod
     def create(
         cls,
-        prompt: str,
+        question: str,
         answer: str,
         raw_question: str,
         raw_answer: str,
@@ -30,7 +29,7 @@ class GSM8KParseEntry(HuggingFaceParseEntry):
         task_name: str,
     ) -> "GSM8KParseEntry":
         return cls(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -46,7 +45,6 @@ class GSM8KDatasetParser(HuggingFaceDatasetParser[GSM8KParseEntry]):
     _data_source: ClassVar[str] = "openai/gsm8k"
     _task_names: ClassVar[list[str]] = ["main", "socratic"]
     _default_task: ClassVar[str] = "main"
-    _default_system_prompt: ClassVar[str] = GSM8K_SYSTEM_PROMPT
 
     def process_entry(
         self, row: dict[str, Any], task_name: str | None = None, **kwargs: Any
@@ -69,10 +67,10 @@ class GSM8KDatasetParser(HuggingFaceDatasetParser[GSM8KParseEntry]):
         # Extract solution (everything before '####')
         solution = raw_answer.split("####")[0].strip()
 
-        prompt = f"{self._system_prompt}\n{raw_question}"
+        question = str(raw_question)
 
         return GSM8KParseEntry.create(
-            prompt=prompt,
+            question=question,
             answer=str(numerical_answer),
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -145,7 +143,7 @@ if __name__ == "__main__":
     parser.parse()
 
     parsed_data = parser.get_parsed_data
-    pprint(parsed_data[0].prompt)
+    pprint(parsed_data[0].question)
     pprint(parsed_data[0].answer)
     pprint(parsed_data[0].raw_question)
     pprint(parsed_data[0].raw_answer)

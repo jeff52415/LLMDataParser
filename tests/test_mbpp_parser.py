@@ -23,7 +23,7 @@ def parser():
 def test_mbpp_parse_entry_creation():
     """Test creation of MBPPParseEntry"""
     entry = MBPPParseEntry.create(
-        prompt="test prompt",
+        question="test question",
         answer="test answer",
         raw_question="raw question",
         task_id=42,
@@ -34,7 +34,7 @@ def test_mbpp_parse_entry_creation():
         source_file="test.pdf",
     )
 
-    assert entry.prompt == "test prompt"
+    assert entry.question == "test question"
     assert entry.answer == "test answer"
     assert entry.raw_question == "raw question"
     assert entry.raw_answer == "test answer"
@@ -49,7 +49,7 @@ def test_mbpp_parse_entry_validation():
     """Test validation of required fields"""
     with pytest.raises(ValueError, match="Task ID must be an integer"):
         MBPPParseEntry.create(
-            prompt="test",
+            question="test",
             answer="test",
             raw_question="test",
             task_id="not_an_int",  # Invalid task_id type
@@ -71,8 +71,6 @@ def test_process_entry(parser, sample_entry):
     assert result.answer == sample_entry["code"]
     assert result.test_list == sample_entry["test_list"]
     assert result.challenge_test_list == sample_entry["challenge_test_list"]
-    expected_prompt = f"{parser._system_prompt}\n\nTask: {sample_entry['text']}"
-    assert result.prompt == expected_prompt
     assert result.task_name == "full"
 
 
@@ -140,18 +138,6 @@ def test_full_workflow_with_different_splits(parser):
     assert len(train_data) > 0
     assert all(isinstance(entry, MBPPParseEntry) for entry in train_data)
     assert all(entry.task_name == "full" for entry in train_data)
-
-
-def test_custom_system_prompt():
-    """Test parser initialization with custom system prompt"""
-    custom_prompt = "Custom system prompt"
-    parser = MBPPDatasetParser(system_prompt=custom_prompt)
-    assert parser._system_prompt == custom_prompt
-
-
-def test_default_system_prompt(parser):
-    """Test parser uses default system prompt when none provided"""
-    assert parser._system_prompt == parser._default_system_prompt
 
 
 def test_get_dataset_description(parser):

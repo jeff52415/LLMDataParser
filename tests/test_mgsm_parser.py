@@ -47,7 +47,7 @@ def sample_mgsm_entries():
 def test_mgsm_parse_entry_creation_valid():
     """Test valid creation of MGSMParseEntry with all fields."""
     entry = MGSMParseEntry.create(
-        prompt="Test prompt",
+        question="Test question",
         answer="Test answer",
         raw_question="Test question",
         raw_answer="Test answer",
@@ -58,7 +58,7 @@ def test_mgsm_parse_entry_creation_valid():
     )
 
     assert isinstance(entry, MGSMParseEntry)
-    assert entry.prompt == "Test prompt"
+    assert entry.question == "Test question"
     assert entry.answer == "Test answer"
     assert entry.raw_question == "Test question"
     assert entry.raw_answer == "Test answer"
@@ -166,22 +166,6 @@ def test_supported_languages(mgsm_parser, language):
     assert entry.language == language
     assert entry.task_name == language
     assert entry.numerical_answer == 42
-
-
-def test_system_prompt_override(mgsm_parser):
-    """Test overriding the default system prompt."""
-    custom_prompt = "Custom system prompt for testing"
-    parser = MGSMDatasetParser(system_prompt=custom_prompt)
-
-    test_entry = {
-        "question": "Test question",
-        "answer": "Test answer",
-        "answer_number": 42,
-        "equation_solution": "42",
-    }
-
-    entry = parser.process_entry(test_entry, task_name="en")
-    assert custom_prompt in entry.prompt
 
 
 def test_get_dataset_description(mgsm_parser):

@@ -7,7 +7,6 @@ from llmdataparser.base_parser import (
     HuggingFaceDatasetParser,
     HuggingFaceParseEntry,
 )
-from llmdataparser.prompts import IFEVAL_SYSTEM_PROMPT  # You'll need to create this
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -21,7 +20,7 @@ class IFEvalParseEntry(HuggingFaceParseEntry):
     @classmethod
     def create(
         cls,
-        prompt: str,
+        question: str,
         answer: str,
         raw_question: str,
         raw_answer: str,
@@ -31,7 +30,7 @@ class IFEvalParseEntry(HuggingFaceParseEntry):
         task_name: str,
     ) -> "IFEvalParseEntry":
         return cls(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -48,7 +47,6 @@ class IFEvalDatasetParser(HuggingFaceDatasetParser[IFEvalParseEntry]):
     _data_source: ClassVar[str] = "google/IFEval"
     _default_task: ClassVar[str] = "default"
     _task_names: ClassVar[list[str]] = ["default"]
-    _default_system_prompt: ClassVar[str] = IFEVAL_SYSTEM_PROMPT
 
     def process_entry(
         self, row: dict[str, Any], task_name: str | None = None, **kwargs: Any
@@ -65,14 +63,13 @@ class IFEvalDatasetParser(HuggingFaceDatasetParser[IFEvalParseEntry]):
         answer = ""
         raw_answer = ""
 
-        # Combine system prompt with the instruction prompt
-        prompt = f"{self._system_prompt}\n\n{raw_question}"
+        question = str(raw_question)
 
         # Use task_name if provided, otherwise use default
         task = task_name or self._get_current_task(row)
 
         return IFEvalParseEntry.create(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -162,6 +159,6 @@ if __name__ == "__main__":
         example = parsed_data[0]
         print("\nExample parsed entry:")
         print(f"Key: {example.key}")
-        print(f"Prompt: {example.prompt}")
+        print(f"Question: {example.question}")
         print(f"Instruction IDs: {example.instruction_id_list}")
         print(f"kwargs: {example.kwargs}")

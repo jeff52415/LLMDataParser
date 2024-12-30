@@ -7,7 +7,6 @@ from llmdataparser.base_parser import (
     HuggingFaceDatasetParser,
     HuggingFaceParseEntry,
 )
-from llmdataparser.prompts import TMLU_SYSTEM_PROMPT
 
 TMLU_VALID_ANSWERS: Final[set[str]] = {"A", "B", "C", "D"}
 TMLU_VALID_ANSWER_STR: Final[str] = ", ".join(sorted(TMLU_VALID_ANSWERS))
@@ -24,7 +23,7 @@ class TMLUParseEntry(HuggingFaceParseEntry):
     @classmethod
     def create(
         cls,
-        prompt: str,
+        question: str,
         answer: str,
         raw_question: str,
         raw_choices: list[str],
@@ -38,7 +37,7 @@ class TMLUParseEntry(HuggingFaceParseEntry):
                 f"Invalid answer_letter '{answer}'; must be one of {TMLU_VALID_ANSWER_STR}"
             )
         return cls(
-            prompt=prompt,
+            question=question,
             answer=answer,
             raw_question=raw_question,
             raw_answer=raw_answer,
@@ -93,7 +92,6 @@ class TMLUDatasetParser(HuggingFaceDatasetParser[TMLUParseEntry]):
         "teacher_qualification",
         "accountant",
     ]
-    _default_system_prompt = TMLU_SYSTEM_PROMPT
 
     def process_entry(
         self, row: dict[str, Any], task_name: str | None = None, **kwargs: Any
@@ -110,10 +108,10 @@ class TMLUDatasetParser(HuggingFaceDatasetParser[TMLUParseEntry]):
         explanation = row.get("explanation", "")
         metadata = row.get("metadata", {})
 
-        prompt = f"{self._system_prompt}\nQuestion: {raw_question}\n{choices}\nAnswer:"
+        question = f"Question: {raw_question}\n{choices}\nAnswer:"
 
         return TMLUParseEntry.create(
-            prompt=prompt,
+            question=question,
             answer=raw_answer,
             raw_question=raw_question,
             raw_choices=raw_choices,
@@ -187,7 +185,7 @@ if __name__ == "__main__":
         example = parsed_data[0]
         print("\nExample parsed entry:")
         print(f"Task: {example.task_name}")
-        print(f"Question: {example.raw_question}")
+        print(f"Question: {example.question}")
         print("Choices:")
         for i, choice in enumerate(example.raw_choices):
             print(f"{chr(65 + i)}. {choice}")

@@ -28,14 +28,14 @@ def sample_row():
 def test_bbh_parse_entry_creation_valid():
     """Test valid creation of BBHParseEntry."""
     entry = BBHParseEntry.create(
-        prompt="Test prompt",
+        question="Test question",
         answer="A",
         raw_question="Test question",
         raw_answer="(A)",
         task_name="reasoning_about_colored_objects",
     )
     assert isinstance(entry, BBHParseEntry)
-    assert entry.prompt == "Test prompt"
+    assert entry.question == "Test question"
     assert entry.answer == "A"
     assert entry.raw_question == "Test question"
     assert entry.raw_answer == "(A)"
@@ -76,7 +76,6 @@ def test_full_parse_workflow(loaded_bbh_parser):
     assert isinstance(first_entry, BBHParseEntry)
     assert first_entry.task_name == "reasoning_about_colored_objects"
     assert first_entry.answer.strip("()").isalpha()  # Should be a single letter
-    assert first_entry.prompt.startswith(loaded_bbh_parser._system_prompt)
 
 
 def test_process_entry(bbh_parser, sample_row):
@@ -87,9 +86,8 @@ def test_process_entry(bbh_parser, sample_row):
 
     assert isinstance(entry, BBHParseEntry)
     assert entry.answer == "A"  # Stripped from "(A)"
-    assert "What color is the sky" in entry.raw_question
+    assert "What color is the sky" in entry.question
     assert entry.raw_answer == "(A)"
-    assert bbh_parser._system_prompt in entry.prompt
     assert entry.task_name == "reasoning_about_colored_objects"
 
 

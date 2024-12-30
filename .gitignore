@@ -38,3 +38,7 @@ dist/
 #notebook cache
 .ipynb_checkpoints/
 notebooks/
+
+#coverage
+.coverage
+.coverage.*

@@ -31,7 +31,7 @@ def ifeval_parser():
 def test_ifeval_parse_entry_creation_valid():
     """Test valid creation of IFEvalParseEntry."""
     entry = IFEvalParseEntry.create(
-        prompt="Test system prompt\n\nTest instruction",
+        question="Test instruction",
         answer="",  # IFEval doesn't have answers
         raw_question="Test instruction",
         raw_answer="",
@@ -42,7 +42,7 @@ def test_ifeval_parse_entry_creation_valid():
     )
 
     assert isinstance(entry, IFEvalParseEntry)
-    assert entry.prompt == "Test system prompt\n\nTest instruction"
+    assert entry.question == "Test instruction"
     assert entry.answer == ""
     assert entry.key == 1
     assert entry.instruction_id_list == ["test_001", "test_002"]
