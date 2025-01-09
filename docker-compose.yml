@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   llmdataparser:
-    build: jeff52415/llmdataparser
+    image: jeff52415/llmdataparser:latest
     environment:
       - GRADIO_SERVER_PORT=7860
     volumes:
